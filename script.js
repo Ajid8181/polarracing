@@ -98,7 +98,7 @@ const calculatePrice = () => {
     }
 
     const total = (price * quantity).toFixed(2);
-    document.getElementById('total-price').textContent = `Rp{total}`;
+    document.getElementById('total-price').textContent = `Rp${total}`;
 };
 
 document.getElementById('calculate-price').addEventListener('click', calculatePrice);
