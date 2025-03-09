@@ -26,13 +26,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         });
     });
 });
-
-// Form Submission
-document.querySelector('.contact-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Thank you for contacting us! We will get back to you soon.');
-    this.reset();
-});
 // Live Chat AI Assistant
 const chatbot = document.getElementById('chatbot');
 const openChat = document.getElementById('open-chat');
@@ -64,7 +57,7 @@ const interval = setInterval(() => {
 
 // Countdown Timer
 const countdown = () => {
-    const targetDate = new Date('2025-4-30').getTime();
+    const targetDate = new Date('2025-8-31').getTime();
     const now = new Date().getTime();
     const difference = targetDate - now;
 
@@ -94,13 +87,13 @@ const calculatePrice = () => {
 
     switch (serviceType) {
         case 'basic':
-            price = Rp 10.000;
+            price = 20.000;
             break;
         case 'pro':
-            price = Rp 70.000;
+            price = 80.000;
             break;
         case 'premium':
-            price = Rp 250.000;
+            price = 200.000;
             break;
     }
 
@@ -109,3 +102,9 @@ const calculatePrice = () => {
 };
 
 document.getElementById('calculate-price').addEventListener('click', calculatePrice);
+// Form Submission
+document.querySelector('.contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Thank you for contacting us! We will get back to you soon.');
+    this.reset();
+});
