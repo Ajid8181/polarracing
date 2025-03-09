@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox CDID Specialist | Premium Services</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a8a4e6;
+            --accent-color: #ff7675;
+            --dark-color: #2d3436;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.hide {
+            transform: translateY(-100%);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), #4a3fdb);
+            color: white;
+            text-align: center;
+            padding: 0 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="2" stroke-opacity="0.1"/></svg>');
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 5%;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Pricing Table */
+        .pricing-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 5%;
+        }
+
+        .price-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .price-card:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Contact Form */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .input-group input, 
+        .input-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem 5%;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2>CDID<span style="color: var(--accent-color);">Pro</span></h2>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="float">Premium Roblox CDID Services</h1>
+            <p>Professional CDID Solutions with Guaranteed Results</p>
+            <button class="cta-button">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature-card">
+            <i class="fas fa-shield-alt fa-3x"></i>
+            <h3>Secure Transactions</h3>
+            <p>100% protected and guaranteed services</p>
+        </div>
+        <!-- Add more feature cards -->
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-table">
+        <div class="price-card">
+            <h3>Basic Package</h3>
+            <h4>$9.99</h4>
+            <ul>
+                <li>Standard CDID Service</li>
+                <li>24/7 Support</li>
+            </ul>
+        </div>
+        <!-- Add more price cards -->
+    </section>
+
+    <!-- Contact Form -->
+    <section class="contact">
+        <form class="contact-form">
+            <div class="input-group">
+                <input type="text" id="name" required>
+                <label for="name">Your Name</label>
+            </div>
+            <button type="submit">Send Request</button>
+        </form>
+    </section>
+
+    <script>
+        // Scroll Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-card').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // Navbar Hide/Show on Scroll
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll) {
+                document.querySelector('.navbar').classList.add('hide');
+            } else {
+                document.querySelector('.navbar').classList.remove('hide');
+            }
+            lastScroll = currentScroll;
+        });
+    </script>
+</body>
+</html>
