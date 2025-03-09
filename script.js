@@ -64,7 +64,7 @@ const interval = setInterval(() => {
 
 // Countdown Timer
 const countdown = () => {
-    const targetDate = new Date('2024-12-31').getTime();
+    const targetDate = new Date('2025-4-30').getTime();
     const now = new Date().getTime();
     const difference = targetDate - now;
 
@@ -94,18 +94,18 @@ const calculatePrice = () => {
 
     switch (serviceType) {
         case 'basic':
-            price = 9.99;
+            price = Rp 10.000;
             break;
         case 'pro':
-            price = 19.99;
+            price = Rp 70.000;
             break;
         case 'premium':
-            price = 29.99;
+            price = Rp 250.000;
             break;
     }
 
     const total = (price * quantity).toFixed(2);
-    document.getElementById('total-price').textContent = `$${total}`;
+    document.getElementById('total-price').textContent = `Rp{total}`;
 };
 
 document.getElementById('calculate-price').addEventListener('click', calculatePrice);
