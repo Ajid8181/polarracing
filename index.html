@@ -8,7 +8,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body><!-- Tambahkan di dalam <body> -->
+<!-- Live Chat AI Assistant -->
+<div id="chatbot">
+    <div class="chat-header">
+        <h3>AI Assistant</h3>
+        <button id="close-chat"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-body">
+        <div class="message ai">Hello! How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" placeholder="Type your message...">
+        <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+<button id="open-chat"><i class="fas fa-comment-dots"></i></button>
+
+<!-- 3D Model Viewer -->
+<div class="model-viewer">
+    <model-viewer src="assets/models/roblox.glb" alt="Roblox Model" auto-rotate camera-controls></model-viewer>
+</div>
+
+<!-- Progress Tracker -->
+<div class="progress-tracker">
+    <h3>Order Progress</h3>
+    <div class="progress-bar">
+        <div class="progress"></div>
+    </div>
+    <p>Status: <span id="status">Processing</span></p>
+</div>
+
+<!-- Countdown Timer -->
+<div class="countdown">
+    <h3>Limited Time Offer</h3>
+    <div class="timer">
+        <span id="days">00</span>:
+        <span id="hours">00</span>:
+        <span id="minutes">00</span>:
+        <span id="seconds">00</span>
+    </div>
+</div>
+
+<!-- Pricing Calculator -->
+<div class="pricing-calculator">
+    <h3>Calculate Your Price</h3>
+    <select id="service-type">
+        <option value="basic">Basic</option>
+        <option value="pro">Pro</option>
+        <option value="premium">Premium</option>
+    </select>
+    <input type="number" id="quantity" placeholder="Quantity" min="1">
+    <button id="calculate-price">Calculate</button>
+    <p>Total: <span id="total-price">$0.00</span></p>
+</div>
     <!-- Particle Background -->
     <div id="particles-js"></div>
 
