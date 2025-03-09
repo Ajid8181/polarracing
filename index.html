@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lizrad Store® | Ultimate Roblox CDID Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A8A4E6;
+            --accent: #FF7675;
+            --dark: #1A1A1A;
+            --light: #FFFFFF;
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 5% 4rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Feature Cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 4rem 5%;
+        }
+
+        .card {
+            background: var(--light);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        /* Interactive Elements */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108,92,231,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <h2>Lizrad<span style="color: var(--accent);">Store</span></h2>
+        <div class="nav-links">
+            <a href="#home" class="nav-link active">Home</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#pricing" class="nav-link">Pricing</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+        <button class="btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Premium Roblox CDID Solutions</h1>
+            <p>Secure & Professional Services with Instant Delivery</p>
+            <div class="cta-group">
+                <button class="btn">Get Started</button>
+                <button class="btn" style="background: var(--accent);">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Military Security</h3>
+            <p>Bank-level encryption for all transactions</p>
+        </div>
+        <!-- Add more cards -->
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="price-card">
+            <h3>Starter Plan</h3>
+            <div class="price">$9.99</div>
+            <button class="btn">Choose Plan</button>
+        </div>
+        <!-- Add more price cards -->
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+        <form class="contact-form">
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <textarea placeholder="Message" required></textarea>
+            <button class="btn" type="submit">Send</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Lizrad Store®. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.setAttribute('data-theme', 
+                document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'
+            );
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Form Handling
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Message sent successfully!');
+            e.target.reset();
+        });
+
+        // Card Interactions
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // Active Nav Link
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            sections.forEach(section => {
+                const top = window.scrollY;
+                const offset = section.offsetTop - 100;
+                const height = section.offsetHeight;
+                const id = section.getAttribute('id');
+
+                if(top >= offset && top < offset + height) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if(link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
