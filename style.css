@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Joki Roblox CDID</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Masuk ke Akun</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p>Belum punya akun? <a href="#" onclick="showRegister()">Daftar</a></p>
+    </div>
+
+    <div class="register-container" style="display:none;">
+        <h2>Daftar Akun</h2>
+        <input type="text" id="reg-username" placeholder="Username">
+        <input type="email" id="reg-email" placeholder="Email">
+        <input type="password" id="reg-password" placeholder="Password">
+        <button onclick="register()">Daftar</button>
+        <p>Sudah punya akun? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+</body>
+</html>
