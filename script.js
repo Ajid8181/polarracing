@@ -73,8 +73,8 @@ const countdown = () => {
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-    document.getElementById('days').textContent = days; 10
-    document.getElementById('hours').textContent = hours; 10
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
     document.getElementById('minutes').textContent = minutes;
     document.getElementById('seconds').textContent = seconds;
 
