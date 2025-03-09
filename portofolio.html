@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lizrad Store - Professional Roblox CDID Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #A8A4E6;
+            --accent: #FF7675;
+            --dark: #2D3436;
+            --light: #FFFFFF;
+            --success: #00B894;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        /* Tambahkan semua style sebelumnya... */
+
+        /* Halaman Baru */
+        .page {
+            display: none;
+            padding: 8rem 8% 4rem;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Lisensi */
+        .license {
+            background: var(--light);
+            padding: 4rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 8%;
+            text-align: center;
+        }
+
+        /* Touch Optimization */
+        button, .nav-links a {
+            touch-action: manipulation;
+            min-width: 48px;
+            min-height: 48px;
+        }
+
+        .cta {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2>Lizrad<span style="color: var(--accent);">Store</span></h2>
+        <div class="nav-links">
+            <a href="#home" class="nav-link active">Home</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#portfolio" class="nav-link">Portfolio</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+        <button id="dark-mode-toggle"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <!-- Halaman Utama -->
+    <section id="home" class="page active">
+        <!-- Konten hero sebelumnya... -->
+    </section>
+
+    <!-- Halaman Layanan -->
+    <section id="services" class="page">
+        <div class="services">
+            <h2>Our Services</h2>
+            <!-- Konten layanan... -->
+        </div>
+    </section>
+
+    <!-- Halaman Portfolio -->
+    <section id="portfolio" class="page">
+        <div class="portfolio-grid">
+            <!-- Item portfolio... -->
+        </div>
+    </section>
+
+    <!-- Halaman Kontak -->
+    <section id="contact" class="page">
+        <!-- Form kontak... -->
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="license">
+            <p>© 2024 Lizrad Store®. All rights reserved.</p>
+            <p>Certified Roblox Developer | Secure Transactions Guaranteed</p>
+        </div>
+    </footer>
+
+    <script>
+        // Navigasi Halaman
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('href').substring(1);
+                
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                document.getElementById(pageId).classList.add('active');
+                link.classList.add('active');
+                
+                // Smooth scroll ke atas
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Touch Event Handlers
+        document.querySelectorAll('.cta').forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Form Handling
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Tambahkan logika form submission
+                alert('Form submitted successfully!');
+                form.reset();
+            });
+        });
+
+        // Tambahkan semua script sebelumnya...
+    </script>
+</body>
+</html>
