@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Head content sama seperti about.html -->
+    <style>
+        /* Tambahan style untuk models.html */
+        .model-card .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .model-card .btn:hover {
+            background: #ff2a20;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(225, 6, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <!-- Sama seperti about.html -->
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="models.html" class="active">Models</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Models Page Hero -->
+    <section class="page-hero">
+        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Polar Models" class="page-hero-image">
+        <div class="hero-overlay"></div>
+        <div class="page-hero-content">
+            <h1>Our Models</h1>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <span>/</span>
+                <a href="models.html">Models</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Models Page Content -->
+    <section class="page-content">
+        <div class="section-title center">
+            <h2>Polar Racing Collection</h2>
+        </div>
+
+        <div class="models-filter">
+            <button class="filter-btn active">All Models</button>
+            <button class="filter-btn">GT Series</button>
+            <button class="filter-btn">Racing Series</button>
+            <button class="filter-btn">Hybrid Technology</button>
+            <button class="filter-btn">Limited Editions</button>
+        </div>
+
+        <div class="models-grid">
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar GT">
+                </div>
+                <div class="model-content">
+                    <h3>Polar GT</h3>
+                    <div class="model-price">$250,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 3.1s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>720 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 340km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Hybrid V8</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1507136566006-cfc505b114fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar Racer Pro">
+                </div>
+                <div class="model-content">
+                    <h3>Polar Racer Pro</h3>
+                    <div class="model-price">$320,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 2.8s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>850 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 370km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Twin-Turbo V10</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar Velocity">
+                </div>
+                <div class="model-content">
+                    <h3>Polar Velocity</h3>
+                    <div class="model-price">$450,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 2.5s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>950 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 400km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Hybrid V12</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar Hybrid">
+                </div>
+                <div class="model-content">
+                    <h3>Polar Hybrid</h3>
+                    <div class="model-price">$280,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 3.0s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>780 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 350km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Plug-in Hybrid</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar GT-S">
+                </div>
+                <div class="model-content">
+                    <h3>Polar GT-S</h3>
+                    <div class="model-price">$290,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 2.9s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>820 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 360km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Twin-Turbo V8</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="model-card">
+                <div class="model-image">
+                    <img src="https://images.unsplash.com/photo-1514867644123-6385d58d3cd4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Polar Track Edition">
+                </div>
+                <div class="model-content">
+                    <h3>Polar Track Edition</h3>
+                    <div class="model-price">$380,000</div>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>0-100km/h: 2.7s</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-horse-head"></i>
+                            <span>900 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Top Speed: 385km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>Naturally Aspirated V12</span>
+                        </div>
+                    </div>
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer sama seperti about.html -->
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const nav = document.querySelector('nav');
+
+        menuToggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.padding = '10px 5%';
+                header.style.background = 'rgba(10, 10, 10, 0.98)';
+            } else {
+                header.style.padding = '15px 5%';
+                header.style.background = 'rgba(30, 30, 30, 0.95)';
+            }
+        });
+
+        // Model Filter
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Filter functionality would go here
+            });
+        });
+    </script>
+</body>
+</html>
