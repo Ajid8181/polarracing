@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Polar Racing Store – Pro Gaming Services</title>
+<meta name="description" content="Jasa joki eFootball & top up coin profesional. Cepat, aman, terpercaya." /><style>
+/* =====================
+   DESIGN SYSTEM
+===================== */
+:root{
+  --bg:#0b0614;
+  --card:#171026;
+  --text:#ffffff;
+  --muted:#a59ad6;
+  --primary:#7b5cff;
+  --accent:#25d366;
+  --danger:#ff4d6d;
+}
+[data-theme="light"]{
+  --bg:#f5f6fb;
+  --card:#ffffff;
+  --text:#121212;
+  --muted:#555;
+  --primary:#5a4bff;
+}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+body{margin:0;background:var(--bg);color:var(--text);transition:.3s;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* =====================
+   HEADER / NAVBAR
+===================== */
+header{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  background:linear-gradient(135deg,#2a105f,#120022);
+}
+.brand{font-weight:900;letter-spacing:1px;font-size:18px}
+.brand span{color:var(--primary)}
+nav a{margin-left:16px;font-weight:600;font-size:14px;opacity:.9}
+nav a:hover{opacity:1}
+
+.toggle{width:52px;height:26px;border-radius:99px;background:#000;position:relative;cursor:pointer}
+.toggle::after{content:"";width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:.3s}
+[data-theme="light"] .toggle{background:#ddd}
+[data-theme="light"] .toggle::after{left:29px;background:#000}
+
+/* =====================
+   HERO
+===================== */
+.hero{padding:28px 18px}
+.hero-card{
+  background:linear-gradient(135deg,#3c1aa6,#140032);
+  border-radius:22px;padding:28px;
+  box-shadow:0 30px 80px rgba(0,0,0,.4)
+}
+.hero h1{margin:0 0 8px;font-size:26px}
+.hero p{margin:0;color:var(--muted)}
+
+/* =====================
+   SECTIONS
+===================== */
+.section{padding:28px 18px}
+.section h2{margin:0 0 16px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+
+.card{
+  background:var(--card);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+  transition:.35s
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.card img{width:100%;height:120px;object-fit:cover}
+.card .info{padding:12px}
+.card h3{margin:0;font-size:14px}
+.card span{font-size:12px;color:var(--muted)}
+.price{margin-top:6px;font-weight:800;color:var(--primary)}
+
+.badge{
+  position:absolute;top:10px;left:10px;
+  background:#ffb800;color:#000;
+  font-size:10px;font-weight:900;
+  padding:4px 6px;border-radius:6px
+}
+
+.order-btn{
+  display:block;margin-top:10px;
+  background:var(--primary);color:#fff;
+  text-align:center;padding:8px;
+  border-radius:10px;font-weight:800
+}
+
+/* =====================
+   ADVANCED UX
+===================== */
+.reveal{opacity:0;transform:translateY(18px);transition:.6s}
+.reveal.show{opacity:1;transform:none}
+
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#7b5cff,#25d366);z-index:200}
+
+/* =====================
+   BOTTOM CTA & CS
+===================== */
+.whatsapp{
+  position:fixed;bottom:18px;right:18px;
+  background:var(--accent);color:#fff;
+  padding:14px 16px;border-radius:50px;
+  font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.4)
+}
+
+.bottom-cta{
+  position:fixed;left:0;right:0;bottom:-120px;
+  background:linear-gradient(135deg,#3c1aa6,#140032);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;transition:.5s;z-index:90
+}
+.bottom-cta.show{bottom:0}
+
+/* =====================
+   FOOTER
+===================== */
+footer{text-align:center;font-size:12px;color:var(--muted);padding:28px 18px}
+
+/* =====================
+   ANIMATION POLISH
+===================== */
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body><div id="progress"></div><header>
+  <div class="brand">POLAR <span>RACING</span></div>
+  <nav>
+    <a href="#services">Layanan</a>
+    <a href="#popular">Populer</a>
+    <a href="#check">Cek Order</a>
+  </nav>
+  <div class="toggle" id="themeToggle"></div>
+</header><section class="hero reveal">
+  <div class="hero-card">
+    <h1>Jasa Joki & Top Up Game</h1>
+    <p>Naik rank tanpa stres. Top up tanpa drama.</p>
+  </div>
+</section><section class="section" id="popular">
+  <h2>Populer Sekarang</h2>
+  <div class="grid">
+    <div class="card reveal">
+      <div class="badge">BEST</div>
+      <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e" />
+      <div class="info">
+        <h3>Joki Rank eFootball</h3>
+        <span>Divisi rendah → elite</span>
+        <div class="price">Mulai 25K</div>
+        <a class="order-btn" href="https://wa.me/6282245224101" target="_blank">Order</a>
+      </div>
+    </div><div class="card reveal">
+  <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420" />
+  <div class="info">
+    <h3>Top Up Coin</h3>
+    <span>1–5 menit proses</span>
+    <div class="price">Mulai 10K</div>
+    <a class="order-btn" href="https://wa.me/6282245224101" target="_blank">Order</a>
+  </div>
+</div>
+
+  </div>
+</section><section class="section" id="services">
+  <h2>Kenapa Polar Racing</h2>
+  <div class="grid">
+    <div class="card reveal"><div class="info"><h3>⚡ Fast Response</h3><span>CS aktif & responsif</span></div></div>
+    <div class="card reveal"><div class="info"><h3>🛡️ Aman</h3><span>No cheat, no ban</span></div></div>
+    <div class="card reveal"><div class="info"><h3>🎮 Pro Player</h3><span>Dikerjakan player elite</span></div></div>
+    <div class="card reveal"><div class="info"><h3>⭐ Terpercaya</h3><span>Ratusan order sukses</span></div></div>
+  </div>
+</section><section class="section" id="check">
+  <h2>Cek Status Order</h2>
+  <div class="card reveal">
+    <div class="info">
+      <input id="orderId" placeholder="Masukkan ID Order" style="width:100%;padding:10px;border-radius:8px;border:none" />
+      <button onclick="checkStatus()" style="margin-top:10px;width:100%;padding:10px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-weight:800">Cek Status</button>
+      <div id="statusResult" style="margin-top:10px;font-size:13px"></div>
+    </div>
+  </div>
+</section><a class="whatsapp" href="https://wa.me/6282245224101" target="_blank">CS WhatsApp</a>
+
+<div class="bottom-cta" id="bottomCTA">
+  <div><strong>Siap naik rank hari ini?</strong></div>
+  <a href="https://wa.me/6282245224101" target="_blank" class="order-btn">Order Sekarang</a>
+</div><footer>
+  © 2026 <strong>Polar Racing Store</strong>. All rights reserved.
+</footer><script>
+// THEME
+const toggle=document.getElementById('themeToggle');
+const root=document.documentElement;
+let theme=localStorage.getItem('theme')||'dark';
+root.setAttribute('data-theme',theme);
+toggle.onclick=()=>{
+  theme=theme==='light'?'dark':'light';
+  root.setAttribute('data-theme',theme);
+  localStorage.setItem('theme',theme);
+}
+
+// SCROLL CTA
+const cta=document.getElementById('bottomCTA');
+window.addEventListener('scroll',()=>{
+  cta.classList.toggle('show',window.scrollY>220);
+  const h=document.documentElement;
+  document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';
+});
+
+// CHECK STATUS
+function checkStatus(){
+  const id=document.getElementById('orderId').value;
+  document.getElementById('statusResult').innerText=
+    id? '✅ Order ditemukan • Sedang diproses':'Masukkan ID Order';
+}
+
+// REVEAL
+const obs=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('show')),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script></body>
+</html>
