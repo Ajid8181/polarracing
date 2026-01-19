@@ -1,0 +1,33 @@
+.sidebar{
+width:200px;
+background:#12152a;
+position:fixed;
+top:0;bottom:0;
+padding:20px;
+}
+.sidebar a{
+display:block;
+color:#bbb;
+text-decoration:none;
+margin:12px 0;
+}
+.sidebar a:hover{color:#fff}
+.card{
+background:var(--card);
+padding:20px;
+border-radius:14px;
+}
+button{
+background:var(--primary);
+border:none;
+padding:10px 14px;
+border-radius:8px;
+color:#fff;
+}
+input,select{
+width:100%;
+margin:8px 0;
+padding:8px;
+border-radius:6px;
+border:none;
+}

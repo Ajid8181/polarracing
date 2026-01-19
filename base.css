@@ -1,0 +1,22 @@
+:root{
+--bg:#0d0f1a;
+--card:#1e2238;
+--text:#fff;
+--primary:#6c5cff;
+}
+[data-theme=light]{
+--bg:#f4f6fb;
+--card:#fff;
+--text:#111;
+}
+body{
+margin:0;
+display:flex;
+background:var(--bg);
+color:var(--text);
+font-family:system-ui;
+}
+main{margin-left:220px;padding:20px;width:100%}
+header{display:flex;justify-content:space-between;align-items:center}
+.section{margin:60px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
