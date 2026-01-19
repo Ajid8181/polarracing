@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Polar Racing Store: Jasa Joki eFootball dan Top Up Coin Terpercaya. Naik rank cepat, aman, dan murah.">
+<meta name="keywords" content="joki eFootball, top up coin eFootball, jasa rank up, Polar Racing">
+<meta property="og:title" content="Polar Racing Store">
+<meta property="og:description" content="Layanan joki dan top up untuk eFootball. Cepat, aman, dan terpercaya.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1542751371-adc38448a05e">
+<meta property="og:url" content="https://polarracing.com">
+<title>Polar Racing Store</title>
+<style>
+:root{
+  --bg:#0b0614;
+  --card:#1a0f2e;
+  --text:#ffffff;
+  --muted:#b9a9ff;
+  --primary:#7b5cff;
+  --secondary:#25d366;
+  --accent:#ffb800;
+  --danger:#ff004c;
+}
+[data-theme="light"]{
+  --bg:#f4f4f8;
+  --card:#ffffff;
+  --text:#111111;
+  --muted:#555;
+  --primary:#5a4bff;
+  --secondary:#1db954;
+  --accent:#ffcc00;
+  --danger:#e6003f;
+}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+body{margin:0;background:var(--bg);color:var(--text);transition:.3s ease}
+
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:linear-gradient(135deg,#2a105f,#120022);
+  position:sticky;top:0;z-index:10;transition:padding .3s ease, box-shadow .3s ease;
+}
+header.compact{padding:8px 16px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.logo-text{font-weight:900;font-size:18px;letter-spacing:1px;color:#fff}.logo-text span{color:var(--primary)}
+
+.toggle{
+  width:54px;height:28px;border-radius:50px;background:#000;
+  position:relative;cursor:pointer;transition:background .3s ease, box-shadow .3s ease
+}
+.toggle::after{
+  content:"";width:22px;height:22px;border-radius:50%;
+  background:#fff;position:absolute;top:3px;left:3px;transition:.3s ease
+}
+[data-theme="light"] .toggle{background:#ddd}
+[data-theme="light"] .toggle::after{left:29px;background:#000}
+.toggle:active{box-shadow:0 0 0 6px rgba(123,92,255,.25)}
+
+nav{
+  display:flex;align-items:center;gap:16px;
+}
+nav a{
+  color:#fff;text-decoration:none;font-weight:600;font-size:14px;transition:.2s ease;
+  position:relative;
+}
+nav a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--primary);transition:.3s ease;
+}
+nav a:hover::after{width:100%}
+
+.hero{padding:16px;position:relative;overflow:hidden}
+.hero::before{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(60,26,166,.2),rgba(20,0,50,.2));z-index:-1;
+  animation:glow-bg 10s ease infinite alternate;
+}
+@keyframes glow-bg{from{opacity:0.5}to{opacity:1}}
+.slider{overflow:hidden;border-radius:18px;box-shadow:0 0 20px rgba(123,92,255,.3);transition:box-shadow .5s ease}
+.slides{display:flex;transition:.5s ease-in-out}
+.slide{
+  min-width:100%;padding:24px;
+  background:linear-gradient(135deg,#3c1aa6,#140032);position:relative;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.slide h1{margin:0 0 6px;font-size:20px;transform:translateY(20px);opacity:0;transition:.8s ease}
+.slide p{margin:0;font-size:14px;color:var(--muted);transform:translateY(20px);opacity:0;transition:.8s ease .2s}
+.slide.active h1,.slide.active p{transform:translateY(0);opacity:1}
+.slide img{
+  position:absolute;top:10%;right:10%;width:40%;opacity:0;transition:.8s ease .4s;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.5))
+}
+.slide.active img{opacity:1;transform:translateX(0)}
+
+.section{padding:20px;transition:background .3s ease}
+.section h2{margin-bottom:14px;opacity:0;transform:translateY(20px);transition:.8s ease}
+.section.show h2{opacity:1;transform:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.card{background:var(--card);border-radius:16px;overflow:hidden;transition:.3s ease;position:relative}
+.card img{width:100%;height:130px;object-fit:cover;transition:transform .5s ease}
+.card:hover img{transform:scale(1.1)}
+.card .info{padding:10px}
+.card h3{margin:0;font-size:14px}
+.card span{font-size:12px;color:var(--muted)}
+.price{margin-top:6px;font-weight:700;color:var(--primary)}
+
+.whatsapp{
+  position:fixed;bottom:16px;right:16px;
+  background:var(--secondary);color:#fff;
+  padding:14px 16px;border-radius:50px;
+  font-weight:700;text-decoration:none;
+  box-shadow:0 8px 20px rgba(0,0,0,.3);transition:.3s ease
+}
+.whatsapp:hover{transform:scale(1.1)}
+
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px;display:flex;flex-direction:column;gap:12px}
+.social-icons{display:flex;justify-content:center;gap:16px}
+.social-icons a{color:var(--text);font-size:20px;transition:.3s ease}
+.social-icons a:hover{color:var(--primary);transform:scale(1.2)}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(20px);animation:fadeUp .8s ease forwards}
+.delay-1{animation-delay:.2s}.delay-2{animation-delay:.4s}.delay-3{animation-delay:.6s}
+@keyframes fadeUp{to{opacity:1;transform:none}}
+.card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.whatsapp{animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.7)}70%{box-shadow:0 0 0 12px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+.slider{animation:glow 6s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 20px rgba(123,92,255,.3)}to{box-shadow:0 0 40px rgba(123,92,255,.7)}}
+
+.bottom-cta{
+  position:fixed;bottom:-100px;left:0;right:0;
+  background:linear-gradient(135deg,#3c1aa6,#140032);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;z-index:20;transition:.5s ease
+}
+.bottom-cta.show{bottom:0}
+.cta-text{font-weight:700;font-size:14px}
+.cta-btn{
+  background:var(--secondary);color:#fff;text-decoration:none;
+  padding:10px 14px;border-radius:10px;font-weight:800;transition:.3s ease
+}
+.cta-btn:hover{transform:scale(1.05);box-shadow:0 0 10px rgba(37,211,102,.5)}
+
+.badge{
+  position:absolute;top:10px;left:10px;
+  background:var(--accent);color:#000;
+  font-size:10px;font-weight:900;
+  padding:4px 6px;border-radius:6px
+}
+.order-btn{
+  display:block;margin-top:10px;
+  background:var(--primary);color:#fff;
+  text-decoration:none;text-align:center;
+  padding:8px;border-radius:10px;font-weight:800;transition:.3s ease
+}
+.order-btn:hover{background:linear-gradient(135deg,var(--primary),#5a4bff);transform:scale(1.05)}
+.scarcity{margin-top:6px;font-size:11px;color:#ff9f9f}
+
+.toast{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(0,0,0,.75);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;opacity:0;transition:.5s ease;z-index:30
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.popup{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(20,0,50,.9);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;opacity:0;transition:.5s ease;z-index:25
+}
+.popup.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.promo{
+  margin-top:10px;font-size:12px;color:var(--accent);font-weight:700
+}
+
+.countdown{font-size:12px;color:var(--accent);font-weight:800;margin-top:6px}
+.notice{
+  position:fixed;top:0;left:0;right:0;
+  background:var(--danger);color:#fff;
+  text-align:center;font-size:12px;
+  padding:6px;z-index:50;transition:.3s ease
+}
+.notice:hover{transform:scale(1.02)}
+
+/* ADVANCED INTERACTIONS */
+.reveal{opacity:0;transform:translateY(18px);transition:.6s ease}
+.reveal.show{opacity:1;transform:none}
+
+/* Back to top */
+#toTop{position:fixed;right:16px;bottom:160px;opacity:0;pointer-events:none;transition:.3s ease;z-index:30}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop button{border:none;border-radius:999px;padding:12px 14px;font-weight:900;background:var(--primary);color:#fff;cursor:pointer;transition:.3s ease}
+#toTop button:hover{transform:rotate(180deg) scale(1.1);box-shadow:0 0 10px rgba(123,92,255,.5)}
+
+/* Image skeleton */
+.skeleton{background:linear-gradient(90deg,#2a2a2a,#3a3a3a,#2a2a2a);background-size:200% 100%;animation:shimmer 1.2s infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
+.card img{display:block;loading:lazy}
+
+/* Scroll progress */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#7b5cff,#25d366);z-index:60;transition:width .1s ease}
+
+/* Focus & accessibility */
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+/* Button ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple span{position:absolute;border-radius:50%;transform:scale(0);animation:ripple .6s linear;background:rgba(255,255,255,.6)}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+/* Offline banner */
+#offline{position:fixed;bottom:0;left:0;right:0;background:#222;color:#fff;text-align:center;padding:6px;font-size:12px;display:none;z-index:60;transition:.3s ease}
+
+/* Cursor glow (desktop only) */
+@media (hover:hover){
+#cursorGlow{position:fixed;top:0;left:0;width:120px;height:120px;border-radius:50%;pointer-events:none;filter:blur(40px);background:radial-gradient(circle,rgba(123,92,255,.35),transparent 60%);transform:translate(-50%,-50%);z-index:1;opacity:.7;transition:transform .05s ease}
+}
+/* Magnetic buttons */
+.magnetic{transition:transform .2s ease}
+/* Section snap feel */
+.section{scroll-margin-top:80px}
+/* Smart tooltip */
+.tip{position:absolute;background:#111;color:#fff;font-size:12px;padding:6px 8px;border-radius:6px;white-space:nowrap;opacity:0;transform:translateY(6px);transition:.2s ease;pointer-events:none}
+.tip.show{opacity:1;transform:none}
+/* Attention pulse */
+.pulse{animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(123,92,255,.4)}50%{box-shadow:0 0 0 18px rgba(123,92,255,0)}}
+
+/* Parallax effect */
+.parallax{background-attachment:fixed;background-position:center;background-size:cover}
+
+/* Contact form */
+.contact-form{padding:20px;background:var(--card);border-radius:16px;max-width:600px;margin:0 auto}
+.contact-form input,.contact-form textarea{width:100%;padding:10px;margin-bottom:10px;border:none;border-radius:8px;background:var(--bg);color:var(--text)}
+.contact-form button{width:100%;padding:10px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-weight:800;cursor:pointer;transition:.3s ease}
+.contact-form button:hover{transform:scale(1.05)}
+
+/* Modal */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:40;transition:.3s ease}
+.modal-content{background:var(--card);padding:20px;border-radius:16px;max-width:400px;width:90%;position:relative;transform:scale(0.9);opacity:0;transition:.3s ease}
+.modal.show{display:flex}
+.modal.show .modal-content{transform:scale(1);opacity:1}
+.close{position:absolute;top:10px;right:10px;cursor:pointer;font-size:20px;color:var(--muted);transition:.3s ease}
+.close:hover{color:var(--danger)}
+
+/* Smooth scroll */
+html{scroll-behavior:smooth}
+
+/* Responsif enhancements */
+@media (min-width:768px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .slide h1{font-size:32px}
+  .slide p{font-size:18px}
+  .slide img{width:30%}
+  .logo-text{font-size:24px}
+  nav a{font-size:16px}
+}
+
+</style>
+</head>
+<body>
+<div id="cursorGlow"></div>
+<div id="progress"></div>
+<div id="offline">Koneksi terputus. Mode offline aktif.</div>
+<div id="toTop"><button>↑</button></div>
+<div class="notice" id="notice">⚡ Promo terbatas hari ini • Slot cepat habis</div>
+<header>
+  <div class="logo-text">POLAR <span>RACING</span></div>
+  <nav>
+    <a href="#layanan">Layanan</a>
+    <a href="#kenapa">Kenapa Kami</a>
+    <a href="#testimoni">Testimoni</a>
+    <a href="#faq">FAQ</a>
+    <a href="#kontak">Kontak</a>
+  </nav>
+  <div class="toggle" id="themeToggle"></div>
+</header>
+<section class="hero parallax" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e');">
+  <div class="slider">
+    <div class="slides" id="slides">
+      <div class="slide">
+        <h1>Jasa Joki eFootball</h1>
+        <p>Rank naik tanpa ribet</p>
+        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e" alt="eFootball Joki">
+      </div>
+      <div class="slide">
+        <h1>Top Up Coin</h1>
+        <p>Cepat. Aman. Legal.</p>
+        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420" alt="Top Up Coin">
+      </div>
+      <div class="slide">
+        <h1>Paket Custom</h1>
+        <p>Sesuaikan dengan kebutuhanmu</p>
+        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f" alt="Paket Custom">
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section reveal" id="layanan">
+  <h2>Layanan</h2>
+  <div class="grid">
+    <div class="card reveal">
+      <div class="badge">BEST SELLER</div>
+      <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e" loading="lazy" alt="Joki Rank">
+      <div class="info">
+        <h3>Joki Rank</h3>
+        <span>Dari Divisi rendah ke elite</span>
+        <div class="price">Mulai 25K</div>
+        <div class="promo">Diskon 10% untuk order pertama</div>
+        <a class="order-btn ripple magnetic" href="https://wa.me/6282245224101?text=Halo%20Polar%20Racing,%20saya%20ingin%20order%20Joki%20Rank" target="_blank">Order Sekarang</a>
+        <div class="scarcity">⏳ Slot hari ini tersisa 3</div>
+        <div class="countdown" id="countdown">Promo berakhir dalam 10:00</div>
+      </div>
+    </div>
+    <div class="card reveal delay-1">
+      <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420" loading="lazy" alt="Top Up Coin">
+      <div class="info">
+        <h3>Top Up Coin</h3>
+        <span>Proses 1–5 menit</span>
+        <div class="price">Mulai 10K</div>
+        <div class="promo">Bonus 5% coin ekstra</div>
+        <a class="order-btn ripple magnetic" href="https://wa.me/6282245224101?text=Halo%20Polar%20Racing,%20saya%20ingin%20order%20Top%20Up%20Coin" target="_blank">Order Sekarang</a>
+        <div class="scarcity">⏳ Stok terbatas</div>
+      </div>
+    </div>
+    <div class="card reveal delay-2">
+      <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f" loading="lazy" alt="Paket Custom">
+      <div class="info">
+        <h3>Paket Custom</h3>
+        <span>Build tim impianmu</span>
+        <div class="price">Mulai 50K</div>
+        <a class="order-btn ripple magnetic" href="https://wa.me/6282245224101?text=Halo%20Polar%20Racing,%20saya%20ingin%20order%20Paket%20Custom" target="_blank">Order Sekarang</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section reveal" id="kenapa">
+  <h2>Kenapa Polar Racing?</h2>
+  <div class="grid">
+    <div class="card reveal"><div class="info"><h3>⚡ Fast Response</h3><span>Balasan CS hitungan menit</span></div></div>
+    <div class="card reveal delay-1"><div class="info"><h3>🛡️ Aman & Garansi</h3><span>Akun dijaga, no ban risk</span></div></div>
+    <div class="card reveal delay-2"><div class="info"><h3>🎮 Pro Player</h3><span>Handled oleh pemain elite</span></div></div>
+    <div class="card reveal delay-3"><div class="info"><h3>⭐ Terpercaya</h3><span>Ratusan order sukses</span></div></div>
+    <div class="card reveal"><div class="info"><h3>💰 Harga Terjangkau</h3><span>Promo setiap hari</span></div></div>
+    <div class="card reveal delay-1"><div class="info"><h3>📱 Multi Platform</h3><span>Support mobile & console</span></div></div>
+  </div>
+</section>
+<section class="section reveal" id="testimoni">
+  <h2>Testimoni</h2>
+  <div class="grid">
+    <div class="card reveal"><div class="info"><h3>Andi</h3><span>"Rank langsung naik, mantap"</span></div></div>
+    <div class="card reveal delay-1"><div class="info"><h3>Rizky</h3><span>"Top up cepat, CS ramah"</span></div></div>
+    <div class="card reveal delay-2"><div class="info"><h3>Sinta</h3><span>"Aman dan terpercaya, recommended!"</span></div></div>
+    <div class="card reveal delay-3"><div class="info"><h3>Budi</h3><span>"Proses cepat, hasil memuaskan"</span></div></div>
+  </div>
+</section>
+<section class="section reveal" id="faq">
+  <h2>FAQ</h2>
+  <div class="grid">
+    <div class="card reveal"><div class="info"><h3>Aman?</h3><span>100% aman, login manual tanpa cheat</span></div></div>
+    <div class="card reveal delay-1"><div class="info"><h3>Berapa lama?</h3><span>Tergantung paket, rata-rata 1–24 jam</span></div></div>
+    <div class="card reveal delay-2"><div class="info"><h3>Metode pembayaran?</h3><span>Transfer bank, e-wallet, pulsa</span></div></div>
+    <div class="card reveal delay-3"><div class="info"><h3>Refund policy?</h3><span>Full refund jika gagal</span></div></div>
+  </div>
+</section>
+<section class="section reveal">
+  <h2>Statistik Mingguan</h2>
+  <div class="grid">
+    <div class="card reveal"><div class="info"><h3 id="counter">🔥 128+</h3><span>Order minggu ini</span></div></div>
+    <div class="card reveal delay-1"><div class="info"><h3>⚡ 5 Menit</h3><span>Rata-rata respon CS</span></div></div>
+    <div class="card reveal delay-2"><div class="info"><h3>⭐ 4.9/5</h3><span>Rating pelanggan</span></div></div>
+  </div>
+</section>
+<section class="section reveal">
+  <h2>Cek Status Order</h2>
+  <div class="card reveal"><div class="info">
+    <input id="orderId" placeholder="Masukkan ID Order" style="width:100%;padding:10px;border-radius:8px;border:none">
+    <button onclick="checkStatus()" class="ripple magnetic" style="margin-top:10px;width:100%;padding:10px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-weight:800">Cek Status</button>
+    <div id="statusResult" style="margin-top:10px;font-size:13px"></div>
+  </div></div>
+</section>
+<section class="section reveal" id="kontak">
+  <h2>Hubungi Kami</h2>
+  <form class="contact-form" onsubmit="sendContact(event)">
+    <input type="text" placeholder="Nama" required>
+    <input type="email" placeholder="Email" required>
+    <textarea placeholder="Pesan" rows="5" required></textarea>
+    <button type="submit" class="ripple magnetic">Kirim</button>
+  </form>
+</section>
+<a class="whatsapp ripple magnetic" href="https://wa.me/6282245224101" target="_blank">CS WhatsApp</a>
+
+<div class="bottom-cta" id="bottomCTA">
+  <div class="cta-text">Siap naik rank hari ini?</div>
+  <a href="https://wa.me/6282245224101?text=Halo%20Polar%20Racing,%20saya%20ingin%20order" target="_blank" class="cta-btn ripple magnetic">Order Sekarang</a>
+</div>
+<footer class="reveal">
+  © 2026 <strong>Polar Racing Store</strong>. All rights reserved.
+  <div class="social-icons">
+    <a href="https://instagram.com/polar.racing" target="_blank" aria-label="Instagram">📷</a>
+    <a href="https://twitter.com/polarracing" target="_blank" aria-label="Twitter">🐦</a>
+    <a href="https://facebook.com/polarracing" target="_blank" aria-label="Facebook">📘</a>
+    <a href="https://youtube.com/polarracing" target="_blank" aria-label="YouTube">▶️</a>
+  </div>
+</footer>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Konfirmasi</h3>
+    <p id="modalMessage"></p>
+  </div>
+</div>
+<div class="toast" id="toast">🔥 Order baru masuk • Joki Rank</div>
+<div class="popup" id="popup">📍 User dari Jakarta baru order Joki Rank</div>
+<script>
+// Theme toggle
+const toggle = document.getElementById('themeToggle');
+const root = document.documentElement;
+let theme = localStorage.getItem('theme') || 'dark';
+root.setAttribute('data-theme', theme);
+
+toggle.onclick = () => {
+  theme = theme === 'light' ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+// Slider
+let index = 0;
+const slides = document.getElementById('slides');
+const slideElements = slides.querySelectorAll('.slide');
+if (slideElements.length > 
