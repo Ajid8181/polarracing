@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JMK GARAGE NGALAM - R&D Skutik Telemetry & MATIKARIA Archive</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            vermilion: { DEFAULT: '#FF3B1D', hover: '#E02D11', light: 'rgba(255, 59, 29, 0.15)' },
+            ambertech: { DEFAULT: '#F59E0B', hover: '#D97706', light: 'rgba(245, 158, 11, 0.15)' },
+            carbon: { 900: '#0B0F17', 800: '#121824', 700: '#1A2333', 600: '#26334A' }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & FontAwesome icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Custom Scrollbars & Utilities */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(11, 15, 23, 0.8); }
+    ::-webkit-scrollbar-thumb { background: #26334A; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF3B1D; }
+
+    .glass-card {
+      background: rgba(18, 24, 36, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-accent {
+      background: rgba(26, 35, 51, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 59, 29, 0.25);
+    }
+    
+    .tab-btn.active {
+      background: rgba(255, 59, 29, 0.2);
+      border-color: #FF3B1D;
+      color: #FFFFFF;
+      box-shadow: 0 0 15px rgba(255, 59, 29, 0.25);
+    }
+
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    
+    /* Ensure all Modals start hidden strictly */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(5, 7, 12, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.active {
+      display: flex !important;
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+      accent-color: #FF3B1D;
+    }
+
+    /* Pulse effect */
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-carbon-900 text-slate-100 font-sans min-h-screen selection:bg-vermilion selection:text-white relative overflow-x-hidden">
+
+  <!-- CRITICAL BUG FIX #2: Fixed Background Layer (pointer-events: none, z-index: -1) -->
+  <div id="bg-photo-layer" class="fixed inset-0 z-[-2] pointer-events-none bg-cover bg-center transition-all duration-300" 
+       style="background-image: url('https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1920&auto=format&fit=crop');">
+  </div>
+  <div id="bg-overlay-layer" class="fixed inset-0 z-[-1] pointer-events-none bg-carbon-900/80 backdrop-blur-sm transition-all duration-300"></div>
+
+  <!-- MAIN UI SHELL -->
+  <div id="app-shell" class="relative z-10 pointer-events-auto min-h-screen flex flex-col">
+    
+    <!-- HEADER NAVBAR -->
+    <header class="border-b border-white/10 glass-card sticky top-0 z-40 px-4 lg:px-8 py-3">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-vermilion/20 border border-vermilion flex items-center justify-center text-vermilion font-mono font-bold text-xl shadow-lg shadow-vermilion/20">
+            <i class="fa-solid font-bold fa-gauge-high"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-lg lg:text-xl tracking-tight text-white flex items-center gap-2">
+              JMK GARAGE NGALAM
+              <span class="text-xs px-2 py-0.5 rounded bg-vermilion/20 border border-vermilion text-vermilion font-mono font-semibold">R&D v2.6</span>
+            </h1>
+            <p class="text-xs text-slate-400 font-mono">Skutik Telemetry Engine & MATIKARIA Archive (2000–2026)</p>
+          </div>
+        </div>
+
+        <!-- Background Controls & Utilities -->
+        <div class="flex items-center gap-3 bg-carbon-800/80 p-1.5 rounded-lg border border-white/10 text-xs">
+          <!-- Opacity slider -->
+          <div class="flex items-center gap-2 px-2">
+            <i class="fa-solid fa-eye text-slate-400"></i>
+            <span class="hidden sm:inline text-slate-400">Dim:</span>
+            <input type="range" id="bg-opacity-slider" min="0" max="85" value="80" class="w-16 sm:w-24 h-1.5 bg-slate-700 rounded cursor-pointer">
+            <span id="bg-opacity-val" class="font-mono text-slate-300 w-8">80%</span>
+          </div>
+
+          <!-- Blur slider -->
+          <div class="flex items-center gap-2 px-2 border-l border-white/10">
+            <i class="fa-solid fa-droplet text-slate-400"></i>
+            <span class="hidden sm:inline text-slate-400">Blur:</span>
+            <input type="range" id="bg-blur-slider" min="0" max="16" value="4" class="w-16 sm:w-20 h-1.5 bg-slate-700 rounded cursor-pointer">
+            <span id="bg-blur-val" class="font-mono text-slate-300 w-8">4px</span>
+          </div>
+
+          <!-- Upload background -->
+          <label class="cursor-pointer bg-slate-700/60 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded transition flex items-center gap-1.5 border border-white/5">
+            <i class="fa-solid fa-image text-ambertech"></i>
+            <span class="hidden md:inline">Ganti Foto BG</span>
+            <input type="file" id="bg-upload-input" accept="image/*" class="hidden">
+          </label>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- NAVIGATION TABS BAR -->
+    <nav class="border-b border-white/10 glass-card sticky top-[65px] z-30 px-4 lg:px-8 py-2 overflow-x-auto">
+      <div class="max-w-7xl mx-auto flex items-center space-x-2 min-w-max">
+        <button data-tab="archive" class="tab-btn active px-4 py-2 rounded-lg border border-white/10 text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-book-bookmark text-vermilion"></i>
+          1. MATIKARIA ARCHIVE
+        </button>
+        <button data-tab="engine" class="tab-btn px-4 py-2 rounded-lg border border-white/10 text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-calculator text-ambertech"></i>
+          2. MESIN & KOMPRESI
+        </button>
+        <button data-tab="cvt" class="tab-btn px-4 py-2 rounded-lg border border-white/10 text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-sliders text-cyan-400"></i>
+          3. SIMULATOR CVT
+        </button>
+        <button data-tab="porting" class="tab-btn px-4 py-2 rounded-lg border border-white/10 text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-wind text-emerald-400"></i>
+          4. PORTING & EXHAUST
+        </button>
+        <button data-tab="dyno" class="tab-btn px-4 py-2 rounded-lg border border-white/10 text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-chart-line text-purple-400"></i>
+          5. LIVE DYNO & DRAG
+        </button>
+      </div>
+    </nav>
+
+    <!-- TAB CONTENTS CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8 space-y-6">
+
+      <!-- ================= TAB 1: MATIKARIA ARCHIVE ================= -->
+      <section id="tab-archive" class="tab-content block space-y-6">
+        
+        <!-- Search & Filter Controls Card -->
+        <div class="glass-card rounded-2xl p-4 lg:p-6 space-y-4">
+          <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="relative w-full md:w-96">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" id="archive-search" placeholder="Cari nama motor / kode mesin (5TL, KVY, KZR, B65)..." 
+                     class="w-full bg-carbon-900/90 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-vermilion">
+            </div>
+
+            <!-- View Modes -->
+            <div class="flex items-center gap-1.5 bg-carbon-900/80 p-1 rounded-xl border border-white/10 w-full md:w-auto justify-center">
+              <button data-action="set-view-mode" data-value="grid" class="view-mode-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-vermilion text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-grip"></i> Grid
+              </button>
+              <button data-action="set-view-mode" data-value="table" class="view-mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-table-list"></i> Tabel Bengkel
+              </button>
+              <button data-action="set-view-mode" data-value="timeline" class="view-mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-timeline"></i> Linimasa
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filters -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-white/5">
+            <div>
+              <label class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Merek</label>
+              <select id="filter-brand" class="w-full bg-carbon-900/90 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                <option value="ALL">Semua Merek</option>
+                <option value="Yamaha">Yamaha</option>
+                <option value="Honda">Honda</option>
+                <option value="Suzuki">Suzuki</option>
+                <option value="Kymco">Kymco</option>
+                <option value="Vespa/Piaggio">Vespa / Piaggio</option>
+                <option value="TVS/Others">TVS / SYM / Benelli / Aprilia</option>
+                <option value="EV Listrik">EV Listrik</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Era Tahun</label>
+              <select id="filter-era" class="w-full bg-carbon-900/90 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                <option value="ALL">Semua Era (2000–2026)</option>
+                <option value="2000-2009">2000 – 2009 (Pionir Karbu)</option>
+                <option value="2010-2017">2010 – 2017 (Injeksi Generasi 1)</option>
+                <option value="2018-2026">2018 – 2026 (Modern & EV)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] uppercase font-mono text-slate-400 block mb-1">Kapasitas (CC)</label>
+              <select id="filter-cc" class="w-full bg-carbon-900/90 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                <option value="ALL">Semua CC</option>
+                <option value="100-115">100cc – 115cc</option>
+                <option value="125-135">125cc – 135cc</option>
+                <option value="150-160">150cc – 160cc</option>
+                <option value="200+">200cc+</option>
+              </select>
+            </div>
+            <div class="flex items-end justify-between">
+              <span id="archive-count" class="text-xs font-mono text-vermilion font-bold pb-2">Loading data...</span>
+              <button id="btn-open-compare" class="bg-ambertech/20 hover:bg-ambertech/30 border border-ambertech/50 text-ambertech px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-code-compare"></i> Bandingkan (<span id="compare-count">0</span>)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Render Target Area -->
+        <div id="archive-render-target"></div>
+
+      </section>
+
+      <!-- ================= TAB 2: KALKULATOR MESIN & KOMPRESI ================= -->
+      <section id="tab-engine" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Input Form -->
+          <div class="lg:col-span-6 glass-card rounded-2xl p-6 space-y-5 border border-white/10">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+              <i class="fa-solid fa-sliders text-ambertech"></i>
+              Parameter Mesin & Head Volume
+            </h2>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Diameter Bore (mm)</label>
+                <input type="number" step="0.1" id="calc-bore" value="50.0" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+                <span class="text-[10px] text-slate-500">Contoh: Mio 50mm, Vario 125 52.4mm</span>
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Langkah Stroke (mm)</label>
+                <input type="number" step="0.1" id="calc-stroke" value="57.9" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+                <span class="text-[10px] text-slate-500">Contoh: Mio 57.9mm, NMAX 58.7mm</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Ruang Bakar / Dome (cc)</label>
+                <input type="number" step="0.1" id="calc-combustion-cc" value="11.5" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+                <span class="text-[10px] text-slate-500">Buret Head (termasuk busi & squish)</span>
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Tebal Paking Gasket (mm)</label>
+                <input type="number" step="0.05" id="calc-gasket" value="0.5" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+                <span class="text-[10px] text-slate-500">Standar 0.5mm (Paking Tembaga/Kertas)</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Target Peak RPM</label>
+                <input type="number" step="100" id="calc-rpm" value="8500" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Bobot Motor (kg)</label>
+                <input type="number" id="calc-weight" value="95" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-mono text-white focus:border-vermilion">
+              </div>
+            </div>
+
+            <button id="btn-reset-engine-calc" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl transition font-mono border border-white/10">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reset Parameter Default
+            </button>
+          </div>
+
+          <!-- Results Display -->
+          <div class="lg:col-span-6 glass-card-accent rounded-2xl p-6 space-y-6 flex flex-col justify-between">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+                <i class="fa-solid fa-microchip text-vermilion"></i>
+                Hasil Kalkulasi Telemetry Mesin
+              </h2>
+
+              <div class="grid grid-cols-2 gap-4 my-4">
+                <div class="bg-carbon-900/80 p-4 rounded-xl border border-white/10">
+                  <span class="text-xs text-slate-400 font-mono block">KAPASITAS REAL</span>
+                  <span id="res-real-cc" class="text-3xl font-extrabold text-vermilion font-mono">113.7</span>
+                  <span class="text-xs text-slate-400"> cc</span>
+                </div>
+                <div class="bg-carbon-900/80 p-4 rounded-xl border border-white/10">
+                  <span class="text-xs text-slate-400 font-mono block">RASIO KOMPRESI (CR)</span>
+                  <span id="res-cr" class="text-3xl font-extrabold text-ambertech font-mono">10.4 : 1</span>
+                </div>
+              </div>
+
+              <!-- Piston Speed Safety Indicator -->
+              <div class="bg-carbon-900/80 p-4 rounded-xl border border-white/10 space-y-2">
+                <div class="flex justify-between items-center text-xs font-mono">
+                  <span class="text-slate-300">Mean Piston Speed (MPS):</span>
+                  <span id="res-mps-val" class="font-bold text-emerald-400">16.4 m/s</span>
+                </div>
+                <div class="w-full h-3 bg-carbon-800 rounded-full overflow-hidden flex">
+                  <div id="res-mps-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 60%"></div>
+                </div>
+                <p id="res-mps-desc" class="text-[11px] text-slate-400">Aman untuk penggunaan harian & touring (di bawah 20 m/s).</p>
+              </div>
+
+              <!-- Fuel & Tuning recommendations -->
+              <div class="mt-4 space-y-2">
+                <div class="flex items-center justify-between bg-carbon-900/60 p-3 rounded-lg border border-white/5 text-xs">
+                  <span class="text-slate-300">Rekomendasi Bahan Bakar:</span>
+                  <span id="res-fuel-rec" class="font-bold font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">Pertamax (RON 92)</span>
+                </div>
+                <div class="flex items-center justify-between bg-carbon-900/60 p-3 rounded-lg border border-white/5 text-xs">
+                  <span class="text-slate-300">Estimasi Output HP (Dyno Wheel):</span>
+                  <span id="res-est-hp" class="font-bold font-mono text-vermilion">9.8 HP @ 8500 RPM</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-vermilion/10 border border-vermilion/30 text-xs text-slate-300">
+              <i class="fa-solid fa-circle-info text-vermilion mr-1"></i>
+              <strong class="text-white">Tips Bengkel Ngalam:</strong> Kompresi statis di atas 11.5:1 wajib porting polished, paking head aluminium/tembaga, dan memajukan pengapian untuk cegah detonasi (knocking).
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: SIMULATOR CVT & TRANSMISI ================= -->
+      <section id="tab-cvt" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Controls Panel -->
+          <div class="lg:col-span-5 glass-card rounded-2xl p-6 space-y-4 border border-white/10">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+              <i class="fa-solid fa-gear text-cyan-400"></i>
+              Konfigurasi Pulley & Roller
+            </h2>
+
+            <!-- Roller Weight & Cross-Roller -->
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-mono text-slate-300">Bobot Roller Utama (gram)</label>
+                <span id="cvt-roller-val" class="font-mono text-cyan-400 font-bold text-sm">9.0g</span>
+              </div>
+              <input type="range" id="cvt-roller" min="5" max="18" step="0.5" value="9.0" class="w-full">
+              
+              <!-- Cross Roller option -->
+              <div class="p-3 bg-carbon-900/80 rounded-xl border border-white/5 space-y-2">
+                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="cvt-cross-toggle" class="rounded accent-vermilion">
+                  <span>Gunakan Konfigurasi Silang (Cross-Roller)</span>
+                </label>
+                <div id="cvt-cross-container" class="hidden flex justify-between items-center pt-2 border-t border-white/5">
+                  <span class="text-xs text-slate-400">Roller Kedua:</span>
+                  <input type="number" id="cvt-roller-2" value="10.0" min="5" max="18" step="0.5" class="w-20 bg-carbon-800 border border-white/10 rounded px-2 py-1 text-xs font-mono text-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Per CVT & Sentri -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Per CVT (RPM)</label>
+                <select id="cvt-per-cvt" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="1000">1000 RPM (Standar)</option>
+                  <option value="1500" selected>1500 RPM (Medium Tight)</option>
+                  <option value="2000">2000 RPM (Hard Racing)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Pulley Angle (°)</label>
+                <select id="cvt-angle" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="14">14.0° (Standar Pabrik)</option>
+                  <option value="13.8">13.8° (Bubut Kerok)</option>
+                  <option value="13.5" selected>13.5° (Extreme Acceleration)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Gear Ratio & Ban -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Rasio Rasio / Reduksi</label>
+                <input type="number" step="0.05" id="cvt-gear-ratio" value="9.8" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white">
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Ukuran Ban Belakang</label>
+                <select id="cvt-tire" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="100/80-14">100/80-14 (Ring 14)</option>
+                  <option value="110/80-14">110/80-14 (Ring 14 Wide)</option>
+                  <option value="130/70-13">130/70-13 (NMAX Ring 13)</option>
+                  <option value="100/90-12">100/90-12 (Scoopy Ring 12)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Real-time RPM Simulator Slider -->
+            <div class="pt-4 border-t border-white/10 space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-mono text-ambertech font-bold">LIVE RPM ENGINE SWEEP:</span>
+                <span id="cvt-rpm-val" class="font-mono text-xl font-extrabold text-vermilion">6,500 RPM</span>
+              </div>
+              <input type="range" id="cvt-rpm-sweep" min="2000" max="11000" step="100" value="6500" class="w-full">
+            </div>
+
+          </div>
+
+          <!-- Interactive SVG CVT Visualizer & Analysis -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- SVG CVT Graphic -->
+            <div class="glass-card rounded-2xl p-6 border border-white/10 flex flex-col items-center justify-center relative overflow-hidden min-h-[280px]">
+              <span class="absolute top-3 left-4 text-xs font-mono text-slate-400">SKEMATIK TRANSMISI CVT ANIMATED</span>
+
+              <svg id="cvt-svg-diagram" viewBox="0 0 500 220" class="w-full max-w-lg h-auto">
+                <!-- Background grid -->
+                <defs>
+                  <linearGradient id="beltGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#FF3B1D" />
+                    <stop offset="50%" stop-color="#F59E0B" />
+                    <stop offset="100%" stop-color="#3B82F6" />
+                  </linearGradient>
+                </defs>
+
+                <!-- Primary Pulley (Front / Left) -->
+                <circle cx="120" cy="110" r="70" fill="none" stroke="#26334A" stroke-width="6" />
+                <circle id="svg-front-pulley" cx="120" cy="110" r="35" fill="none" stroke="#FF3B1D" stroke-width="4" stroke-dasharray="4 2" />
+                <circle cx="120" cy="110" r="10" fill="#FF3B1D" />
+                <text x="120" y="195" text-anchor="middle" fill="#94A3B8" font-size="11" font-family="monospace">Pulley Depan (Primary)</text>
+
+                <!-- Secondary Pulley (Rear / Right) -->
+                <circle cx="380" cy="110" r="70" fill="none" stroke="#26334A" stroke-width="6" />
+                <circle id="svg-rear-pulley" cx="380" cy="110" r="55" fill="none" stroke="#3B82F6" stroke-width="4" stroke-dasharray="4 2" />
+                <circle cx="380" cy="110" r="10" fill="#3B82F6" />
+                <text x="380" y="195" text-anchor="middle" fill="#94A3B8" font-size="11" font-family="monospace">Pulley Belakang (Clutch)</text>
+
+                <!-- V-Belt Track (Dynamically updated via JS) -->
+                <path id="svg-vbelt" d="M 120 75 L 380 55 A 55 55 0 0 1 380 165 L 120 145 A 35 35 0 0 1 120 75 Z" 
+                      fill="none" stroke="url(#beltGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+
+              <div class="mt-2 flex items-center gap-6 text-xs font-mono">
+                <div>Rasio Belt Depan/Belakang: <span id="res-cvt-belt-ratio" class="text-cyan-400 font-bold">1.57 : 1</span></div>
+                <div>Status Kampas: <span id="res-cvt-clutch-status" class="text-emerald-400 font-bold">ENGAGED</span></div>
+              </div>
+            </div>
+
+            <!-- Performance Metrics & Gredek Diagnosis -->
+            <div class="glass-card-accent rounded-2xl p-6 space-y-4">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono border-b border-white/10 pb-2 flex items-center justify-between">
+                <span>Prediksi Karakter & Diagnosa Gredek</span>
+                <i class="fa-solid fa-chart-line text-ambertech"></i>
+              </h3>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div class="bg-carbon-900/80 p-3 rounded-xl border border-white/5">
+                  <span class="text-[10px] text-slate-400 font-mono block">RATA-RATA BOBOT</span>
+                  <span id="res-avg-roller" class="text-lg font-bold font-mono text-cyan-400">9.0 gram</span>
+                </div>
+                <div class="bg-carbon-900/80 p-3 rounded-xl border border-white/5">
+                  <span class="text-[10px] text-slate-400 font-mono block">ESTIMASI TOP SPEED</span>
+                  <span id="res-top-speed" class="text-lg font-bold font-mono text-emerald-400">112 km/h</span>
+                </div>
+                <div class="bg-carbon-900/80 p-3 rounded-xl border border-white/5 col-span-2 sm:col-span-1">
+                  <span class="text-[10px] text-slate-400 font-mono block">RESPON AKSELERASI</span>
+                  <span id="res-accel-rating" class="text-lg font-bold font-mono text-vermilion">Sangat Responsif</span>
+                </div>
+              </div>
+
+              <!-- Gredek Warning / Diagnosis Box -->
+              <div id="gredek-box" class="p-4 rounded-xl bg-slate-900/80 border border-emerald-500/30 flex gap-3 items-start">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-lg mt-0.5"></i>
+                <div class="text-xs space-y-1">
+                  <h4 id="gredek-title" class="font-bold text-emerald-300">Setelan Seimbang (Bebas Gredek)</h4>
+                  <p id="gredek-desc" class="text-slate-300 leading-relaxed">Kombinasi bobot roller dan per CVT seimbang. Transisi pergerakan pulley akan berjalan halus tanpa gejala gredek pada akselerasi awal.</p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: PORTING & EXHAUST DESIGNER ================= -->
+      <section id="tab-porting" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Flow & Valve Calculator -->
+          <div class="lg:col-span-6 glass-card rounded-2xl p-6 space-y-5 border border-white/10">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+              <i class="fa-solid fa-circle-notch text-emerald-400"></i>
+              Kalkulator Valve & Target Flow Speed
+            </h2>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Ukuran Klep In (mm)</label>
+                <input type="number" step="0.5" id="port-valve-in" value="26.0" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white">
+                <span class="text-[10px] text-slate-500">Klep Masuk (Inlet)</span>
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Ukuran Klep Ex (mm)</label>
+                <input type="number" step="0.5" id="port-valve-ex" value="22.0" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white">
+                <span class="text-[10px] text-slate-500">Klep Buang (Exhaust)</span>
+              </div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-300">Target Efisiensi Porting:</span>
+                <span id="port-target-eff-val" class="text-emerald-400 font-bold">85% (Racing Harian)</span>
+              </div>
+              <input type="range" id="port-target-eff" min="70" max="100" value="85" class="w-full">
+            </div>
+
+            <!-- Output Flow Recommendations -->
+            <div class="bg-carbon-900/80 p-4 rounded-xl border border-white/10 space-y-3">
+              <h3 class="text-xs font-mono text-slate-400 uppercase">Rekomendasi Diameter Porting Head</h3>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-2.5 bg-carbon-800 rounded-lg">
+                  <span class="text-slate-400 block text-[10px]">DIAMETER IN PORT</span>
+                  <span id="res-port-in-dia" class="text-base font-bold font-mono text-emerald-400">22.1 mm</span>
+                  <span class="text-[10px] text-slate-400 block">85% dari Klep In</span>
+                </div>
+                <div class="p-2.5 bg-carbon-800 rounded-lg">
+                  <span class="text-slate-400 block text-[10px]">DIAMETER EX PORT</span>
+                  <span id="res-port-ex-dia" class="text-base font-bold font-mono text-cyan-400">18.7 mm</span>
+                  <span class="text-[10px] text-slate-400 block">85% dari Klep Ex</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Exhaust Header Calculator -->
+          <div class="lg:col-span-6 glass-card rounded-2xl p-6 space-y-5 border border-white/10">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
+              <i class="fa-solid fa-fire-flame-curved text-vermilion"></i>
+              Knalpot 4-Tak Header & Length Calculator
+            </h2>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Target RPM Power Peak</label>
+                <input type="number" step="250" id="ex-rpm" value="9000" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white">
+              </div>
+              <div>
+                <label class="text-xs font-mono text-slate-300 block mb-1">Durasi Noken As / Cam (°)</label>
+                <input type="number" step="1" id="ex-cam-duration" value="250" class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white">
+              </div>
+            </div>
+
+            <!-- Exhaust Pipe Dimensions Output -->
+            <div class="bg-carbon-900/90 p-4 rounded-xl border border-vermilion/30 space-y-3">
+              <h3 class="text-xs font-mono text-vermilion font-bold uppercase">Dimensi Ideal Leher Knalpot (Header)</h3>
+              
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between items-center p-2 rounded bg-carbon-800/80">
+                  <span class="text-slate-300">Diameter Dalam Primary (Header):</span>
+                  <span id="res-ex-primary-dia" class="font-mono text-ambertech font-bold text-sm">24.5 mm</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded bg-carbon-800/80">
+                  <span class="text-slate-300">Panjang Total Header Primary:</span>
+                  <span id="res-ex-primary-len" class="font-mono text-ambertech font-bold text-sm">62.0 cm</span>
+                </div>
+                <div class="flex justify-between items-center p-2 rounded bg-carbon-800/80">
+                  <span class="text-slate-300">Diameter Secondary Pipe:</span>
+                  <span id="res-ex-secondary-dia" class="font-mono text-cyan-400 font-bold text-sm">28.0 mm</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-400 italic">
+              *Perhitungan menggunakan rumus gelombang akustik gas buang (Helmholtz resonance theory). Cocok untuk acuan bikin leher knalpot custom di tukang las Ngalam.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: LIVE DYNO & DRAG LOG ================= -->
+      <section id="tab-dyno" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Canvas Dyno Graphic -->
+          <div class="lg:col-span-8 glass-card rounded-2xl p-6 space-y-4 border border-white/10">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+              <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-area text-purple-400"></i>
+                Chassis Dyno Telemetry Chart (Simulated Wheel HP & Torque)
+              </h2>
+              <button id="btn-dyno-run" class="bg-vermilion hover:bg-vermilion-hover text-white text-xs px-4 py-2 rounded-xl font-bold font-mono flex items-center gap-2 shadow-lg shadow-vermilion/30 transition">
+                <i class="fa-solid fa-play"></i> RUN DYNO TEST
+              </button>
+            </div>
+
+            <div class="relative w-full aspect-[16/9] min-h-[300px] bg-carbon-900/90 rounded-xl overflow-hidden border border-white/5 p-2">
+              <canvas id="dyno-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex items-center justify-center gap-6 text-xs font-mono pt-2">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-vermilion inline-block"></span>
+                <span class="text-slate-300">HP Tuned Peak: <strong id="dyno-hp-peak" class="text-white">12.4 HP</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-ambertech inline-block"></span>
+                <span class="text-slate-300">Torque Tuned Peak: <strong id="dyno-tq-peak" class="text-white">11.8 Nm</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-slate-500 inline-block"></span>
+                <span class="text-slate-400">Stock Baseline</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drag Strip Simulator & Log Management -->
+          <div class="lg:col-span-4 space-y-6">
+            
+            <!-- Drag strip timer simulation -->
+            <div class="glass-card-accent rounded-2xl p-6 space-y-4">
+              <h3 class="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2 border-b border-white/10 pb-2">
+                <i class="fa-solid fa-flag-checkered text-ambertech"></i>
+                Simulasi Drag Strip (200m & 402m)
+              </h3>
+
+              <div class="space-y-3">
+                <div class="bg-carbon-900/80 p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                  <div>
+                    <span class="text-[10px] text-slate-400 font-mono block">201 METER ET (DETIK)</span>
+                    <span id="drag-201-time" class="text-2xl font-extrabold text-ambertech font-mono">9.42 s</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] text-slate-400 font-mono block">TRAP SPEED</span>
+                    <span id="drag-201-speed" class="text-base font-bold text-slate-200 font-mono">104 km/h</span>
+                  </div>
+                </div>
+
+                <div class="bg-carbon-900/80 p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                  <div>
+                    <span class="text-[10px] text-slate-400 font-mono block">402 METER ET (DETIK)</span>
+                    <span id="drag-402-time" class="text-2xl font-extrabold text-vermilion font-mono">15.10 s</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] text-slate-400 font-mono block">TRAP SPEED</span>
+                    <span id="drag-402-speed" class="text-base font-bold text-slate-200 font-mono">121 km/h</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Log controls -->
+              <div class="pt-2 space-y-2">
+                <input type="text" id="log-setup-name" placeholder="Nama Log Setup (Misal: Porting Spec 54mm)..." 
+                       class="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500">
+                <button id="btn-save-log" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs py-2 rounded-xl transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-floppy-disk"></i> Simpan Record Dyno Log
+                </button>
+              </div>
+            </div>
+
+            <!-- Saved Dyno Logs List -->
+            <div class="glass-card rounded-2xl p-5 space-y-3 border border-white/10">
+              <h4 class="text-xs font-mono font-bold text-slate-300 uppercase flex items-center justify-between">
+                <span>History Dyno Saved Log</span>
+                <span id="dyno-log-count" class="text-vermilion">0 Records</span>
+              </h4>
+              <div id="dyno-logs-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Dynamic log entries rendered here -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-white/10 glass-card py-4 px-6 text-center text-xs font-mono text-slate-400">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div>&copy; 2000–2026 JMK GARAGE NGALAM — R&D Skutik Telemetry Studio</div>
+        <div class="text-slate-500">Built for Google Sites Full-Page-Embed | Telemetry Engine v2.6</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= MODALS CONTAINER ================= -->
+
+  <!-- 1. MOTOR SPEC DETAIL MODAL -->
+  <div id="modal-spec-detail" class="modal-backdrop p-4">
+    <div class="glass-card-accent w-full max-w-2xl rounded-2xl p-6 border border-white/20 space-y-5 max-h-[90vh] overflow-y-auto relative">
+      <button data-action="close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+        <div class="w-12 h-12 rounded-xl bg-vermilion/20 border border-vermilion flex items-center justify-center text-vermilion text-2xl font-bold font-mono">
+          <i class="fa-solid fa-motorcycle"></i>
+        </div>
+        <div>
+          <h2 id="modal-spec-title" class="text-xl font-extrabold text-white">Yamaha Mio Sporty 5TL</h2>
+          <p id="modal-spec-subtitle" class="text-xs font-mono text-slate-400">Era 2004–2008 | Kode Mesin: 5TL | Brand: Yamaha</p>
+        </div>
+      </div>
+
+      <!-- Spec Details Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">BORE X STROKE</span>
+          <span id="modal-spec-bore-stroke" class="text-sm font-bold font-mono text-white">50.0 x 57.9 mm</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">KAPASITAS MESIN</span>
+          <span id="modal-spec-cc" class="text-sm font-bold font-mono text-vermilion">113.7 cc</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">RASIO KOMPRESI</span>
+          <span id="modal-spec-cr" class="text-sm font-bold font-mono text-ambertech">8.8 : 1</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">TENAGA MAKSIMAL</span>
+          <span id="modal-spec-hp" class="text-sm font-bold font-mono text-white">8.9 HP @ 8000 RPM</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">TORSI MAKSIMAL</span>
+          <span id="modal-spec-tq" class="text-sm font-bold font-mono text-white">8.6 Nm @ 6500 RPM</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">BOBOT KOSONG</span>
+          <span id="modal-spec-weight" class="text-sm font-bold font-mono text-slate-300">94 kg</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">ROLLER STANDAR</span>
+          <span id="modal-spec-roller" class="text-sm font-bold font-mono text-cyan-400">11.0 gram</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">KODE V-BELT</span>
+          <span id="modal-spec-belt" class="text-sm font-bold font-mono text-slate-300">5TL-E7641-00</span>
+        </div>
+        <div class="bg-carbon-900 p-3 rounded-xl border border-white/5">
+          <span class="text-slate-400 font-mono text-[10px] block">KAPASITAS OLI</span>
+          <span id="modal-spec-oil" class="text-sm font-bold font-mono text-slate-300">0.8 Liter</span>
+        </div>
+      </div>
+
+      <!-- Workshop Notes -->
+      <div class="bg-carbon-900 p-4 rounded-xl border border-white/10 space-y-1">
+        <h4 class="text-xs font-mono font-bold text-ambertech flex items-center gap-1.5">
+          <i class="fa-solid fa-wrench"></i> TUNING & WORKSHOP NOTES NGALAM:
+        </h4>
+        <p id="modal-spec-notes" class="text-xs text-slate-300 leading-relaxed">
+          Karakter mesin legendaris mudah di-boreup hingga 54mm-58mm tanpa ubah liner ekstrem. Kelemahan di gredek kampas ganda standar.
+        </p>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button id="modal-btn-send-to-calc" class="flex-1 bg-vermilion hover:bg-vermilion-hover text-white text-xs py-2.5 rounded-xl font-bold font-mono transition flex items-center justify-center gap-2 shadow-lg shadow-vermilion/20">
+          <i class="fa-solid fa-square-arrow-up-right"></i> KIRIM KE TUNING LAB (KALKULATOR)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HEAD-TO-HEAD COMPARE MODAL -->
+  <div id="modal-compare" class="modal-backdrop p-4">
+    <div class="glass-card-accent w-full max-w-4xl rounded-2xl p-6 border border-white/20 space-y-5 max-h-[90vh] overflow-y-auto relative">
+      <button data-action="close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="border-b border-white/10 pb-3">
+        <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+          <i class="fa-solid fa-code-compare text-ambertech"></i>
+          Head-to-Head Skutik Compare & Power-to-Weight (PWR)
+        </h2>
+        <p class="text-xs font-mono text-slate-400">Komparasi teknis hingga 3 motor sekaligus</p>
+      </div>
+
+      <div id="compare-render-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Dynamic comparison columns -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /**
+     * CRITICAL BUG FIX #1: Sandboxed Iframe Safe Storage Helper
+     * Never call window.localStorage directly! Always use safeStorage.
+     */
+    const safeStorage = (function() {
+      const memoryStore = {};
+      
+      return {
+        get: function(key) {
+          try {
+            return window.localStorage.getItem(key) || memoryStore[key] || null;
+          } catch(e) {
+            return memoryStore[key] || null;
+          }
+        },
+        set: function(key, value) {
+          try {
+            window.localStorage.setItem(key, value);
+          } catch(e) {
+            memoryStore[key] = String(value);
+          }
+        },
+        remove: function(key) {
+          try {
+            window.localStorage.removeItem(key);
+          } catch(e) {
+            delete memoryStore[key];
+          }
+        }
+      };
+    })();
+
+    /**
+     * COMPREHENSIVE MATIKARIA DATABASE (2000–2026) - 100+ Indonesian & Asian Matic Skutiks
+     */
+    const matikariaDatabase = [
+      // YAMAHA
+      { id: "yamaha-mio-5tl", brand: "Yamaha", name: "Mio Sporty 5TL", year: "2004–2008", era: "2000-2009", engineCode: "5TL", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 8.8, hp: 8.9, tq: 8.6, weight: 94, roller: 11.0, belt: "5TL-E7641-00", oil: "0.8 L", fuelSystem: "Karburator Keihin NCV24", notes: "Legenda matik Malang. Liner tebal gampang di-boreup 54-58mm. Wajib atur roller & per CVT anti gredek." },
+      { id: "yamaha-nouvo-5lw", brand: "Yamaha", name: "Nouvo Lele 5LW", year: "2002–2004", era: "2000-2009", engineCode: "5LW", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 8.8, hp: 8.9, tq: 8.6, weight: 103, roller: 11.0, belt: "5LW-E7641-00", oil: "0.8 L", fuelSystem: "Karburator Mikuni BS25", notes: "Pionir matik 16-inch Yamaha di Indonesia. Rangka stabil buat jalanan bergelombang." },
+      { id: "yamaha-nouvo-z", brand: "Yamaha", name: "Nouvo Z 1P7", year: "2005–2007", era: "2000-2009", engineCode: "1P7", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 8.8, hp: 8.9, tq: 8.6, weight: 105, roller: 11.0, belt: "5LW-E7641-00", oil: "0.8 L", fuelSystem: "Karburator Mikuni BS25", notes: "AIS system, desain lampu ganda ikonik. Favorit modifikasi Thailand Look & Touring." },
+      { id: "yamaha-mio-smile", brand: "Yamaha", name: "Mio Smile 28D", year: "2008–2012", era: "2000-2009", engineCode: "28D", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 8.8, hp: 8.9, tq: 8.6, weight: 94, roller: 10.5, belt: "28D-E7641-00", oil: "0.8 L", fuelSystem: "Karburator Keihin NCV24", notes: "Facelift lampu depan menyatu sein. Sistem CVT diperbarui." },
+      { id: "yamaha-mio-soul-14d", brand: "Yamaha", name: "Mio Soul 14D", year: "2007–2012", era: "2000-2009", engineCode: "14D", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 8.8, hp: 8.9, tq: 8.6, weight: 97, roller: 10.5, belt: "14D-E7641-00", oil: "0.8 L", fuelSystem: "Karburator Keihin NCV24", notes: "Bodi lebih gambot dan tangki muat lebih banyak. Basis mesin persis Mio 5TL." },
+      { id: "yamaha-mio-j", brand: "Yamaha", name: "Mio J YMJET-FI", year: "2012–2014", era: "2010-2017", engineCode: "54P", cc: 113.7, bore: 50.0, stroke: 57.9, cr: 9.3, hp: 7.75, tq: 8.5, weight: 92, roller: 9.5, belt: "54P-E7641-00", oil: "0.8 L", fuelSystem: "YMJET-FI Injection", notes: "Sangat irit BBM tapi kampas rem & per CVT perlu custom kalau mau akselerasi galak." },
+      { id: "yamaha-mio-m3", brand: "Yamaha", name: "Mio M3 125 Blue Core", year: "2014–2024", era: "2010-2017", engineCode: "2PH", cc: 125.0, bore: 52.4, stroke: 57.9, cr: 9.5, hp: 9.5, tq: 9.6, weight: 94, roller: 12.0, belt: "2PH-E7641-00", oil: "0.8 L", fuelSystem: "Blue Core FI", notes: "Mesin 125cc irit dan responsif. Cocok ditaruh roller 9g-10g untuk tanjakan Malang-Batu." },
+      { id: "yamaha-nmax-2dp", brand: "Yamaha", name: "NMAX 155 Old", year: "2015–2019", era: "2010-2017", engineCode: "2DP", cc: 155.1, bore: 58.0, stroke: 58.7, cr: 10.5, hp: 14.8, tq: 14.4, weight: 127, roller: 13.0, belt: "2DP-E7641-00", oil: "0.9 L", fuelSystem: "FI VVA (Variable Valve Actuation)", notes: "Penguasa Maxi matik. VVA aktif di 6000 RPM. Sering di-upgrade per CVT 1500 RPM & bubut pulley 13.8°." },
+      { id: "yamaha-nmax-turbo", brand: "Yamaha", name: "NMAX Turbo / Neo 2024", year: "2024–2026", era: "2018-2026", engineCode: "B6H-TURBO", cc: 155.1, bore: 58.0, stroke: 58.7, cr: 11.6, hp: 15.1, tq: 14.2, weight: 130, roller: 13.0, belt: "B6H-E7641-00", oil: "0.9 L", fuelSystem: "YCVT Electronic / FI VVA", notes: "Sensasi Turbo Y-Shift elektronis. Akselerasi gila di jalanan naik ke Bromo!" },
+      { id: "yamaha-aerox-b65", brand: "Yamaha", name: "Aerox 155 VVA B65", year: "2017–2020", era: "2010-2017", engineCode: "B65", cc: 155.1, bore: 58.0, stroke: 58.7, cr: 10.5, hp: 14.8, tq: 13.8, weight: 118, roller: 13.0, belt: "B65-E7641-00", oil: "0.9 L", fuelSystem: "FI VVA", notes: "Matik rasio sporty. Power to weight ratio sangat baik. Roller 10g-11g siap diajak cornering." },
+      { id: "yamaha-fazzio", brand: "Yamaha", name: "Fazzio Hybrid 125", year: "2022–2026", era: "2018-2026", engineCode: "BEJ", cc: 124.8, bore: 52.4, stroke: 57.9, cr: 11.0, hp: 8.3, tq: 10.6, weight: 95, roller: 12.0, belt: "BEJ-E7641-00", oil: "0.8 L", fuelSystem: "Blue Core Hybrid FI", notes: "Fitur Electric Power Assist Start memberikan tambahan torsi 3 detik awal." },
+
+      // HONDA
+      { id: "honda-vario-kvb", brand: "Honda", name: "Vario 110 Karbu KVB", year: "2006–2013", era: "2000-2009", engineCode: "KVB", cc: 108.0, bore: 50.0, stroke: 55.0, cr: 10.7, hp: 8.9, tq: 8.4, weight: 99, roller: 13.0, belt: "23100-KVB-901", oil: "0.7 L", fuelSystem: "Karburator Keihin VK22 liquid cooled", notes: "Matik radiator pertama Honda di Indonesia. Mesin sangat awet & halus." },
+      { id: "honda-beat-kvy", brand: "Honda", name: "BeAT Karbu KVY", year: "2008–2012", era: "2000-2009", engineCode: "KVY", cc: 108.0, bore: 50.0, stroke: 55.0, cr: 9.2, hp: 8.2, tq: 8.3, weight: 89, roller: 12.0, belt: "23100-KVY-901", oil: "0.7 L", fuelSystem: "Karburator Keihin VK22 air cooled", notes: "Raja jualan nasional. Rangka lincah, mesin gampang di-upgrade jadi 130cc harian." },
+      { id: "honda-vario-kzr", brand: "Honda", name: "Vario 125 PGM-FI KZR", year: "2012–2015", era: "2010-2017", engineCode: "KZR", cc: 124.8, bore: 52.4, stroke: 57.9, cr: 11.0, hp: 11.3, tq: 10.8, weight: 112, roller: 18.0, belt: "23100-KZR-601", oil: "0.8 L", fuelSystem: "PGM-FI eSP", notes: "Vario 125 Bohlam legend. Head & throttle body enak di-boreup 155cc Vario 150." },
+      { id: "honda-vario-k59", brand: "Honda", name: "Vario 150 eSP K59", year: "2015–2020", era: "2010-2017", engineCode: "K59", cc: 149.3, bore: 57.3, stroke: 57.9, cr: 10.6, hp: 13.1, tq: 13.4, weight: 109, roller: 15.5, belt: "23100-K59-A01", oil: "0.8 L", fuelSystem: "PGM-FI eSP", notes: "Favorit anak muda Ngalam. Torsi badak, tinggal ganti roller PCX (17g) / Beat (12g) silang." },
+      { id: "honda-vario-k2s", brand: "Honda", name: "Vario 160 eSP+ K2S", year: "2022–2026", era: "2018-2026", engineCode: "K2S", cc: 156.9, bore: 60.0, stroke: 55.5, cr: 12.0, hp: 15.4, tq: 13.8, weight: 117, roller: 19.0, belt: "23100-K2S-N01", oil: "0.8 L", fuelSystem: "PGM-FI 4-Valve eSP+", notes: "Mesin 4 klep efisiensi tinggi. Butuh bensin minimal Pertamax Turbo karena CR 12:1." },
+      { id: "honda-pcx-160", brand: "Honda", name: "PCX 160 K1Z", year: "2021–2026", era: "2018-2026", engineCode: "K1Z", cc: 156.9, bore: 60.0, stroke: 55.5, cr: 12.0, hp: 16.0, tq: 14.7, weight: 132, roller: 19.0, belt: "23100-K1Z-J11", oil: "0.8 L", fuelSystem: "PGM-FI 4-Valve eSP+", notes: "Cruiser matik super nyaman. Pulley sudut 13.8° bikin loncatan awal makin padat." },
+
+      // SUZUKI
+      { id: "suzuki-spin-125", brand: "Suzuki", name: "Spin 125", year: "2006–2011", era: "2000-2009", engineCode: "Spin125", cc: 124.1, bore: 53.5, stroke: 55.2, cr: 9.6, hp: 9.5, tq: 9.5, weight: 93, roller: 12.0, belt: "27601-33G00", oil: "1.0 L", fuelSystem: "Karburator Mikuni BS26", notes: "Matik 125cc harga terjangkau di zamannya. Akselerasi putaran bawah sangat galak." },
+      { id: "suzuki-skywave-125", brand: "Suzuki", name: "Skywave 125", year: "2007–2011", era: "2000-2009", engineCode: "UW125", cc: 124.1, bore: 53.5, stroke: 55.2, cr: 9.6, hp: 9.6, tq: 9.6, weight: 113, roller: 15.0, belt: "27601-33G00", oil: "1.0 L", fuelSystem: "Karburator Mikuni BS26", notes: "Velg 16-inch ganda shock belakang. Sangat stabil di kecepatan tinggi." },
+      { id: "suzuki-burgman-125", brand: "Suzuki", name: "Burgman Street 125EX", year: "2023–2026", era: "2018-2026", engineCode: "SEP-ALPHA", cc: 124.0, bore: 52.5, stroke: 57.4, cr: 10.3, hp: 8.6, tq: 10.0, weight: 111, roller: 14.0, belt: "27601-09J00", oil: "0.8 L", fuelSystem: "Suzuki Eco Performance FI", notes: "Kenyamanan khas maxi Suzuki dengan Silent Starter." },
+
+      // KYMCO
+      { id: "kymco-trend-125", brand: "Kymco", name: "Trend 125 / Metica", year: "2000–2006", era: "2000-2009", engineCode: "KDU", cc: 124.6, bore: 52.4, stroke: 57.8, cr: 9.2, hp: 9.0, tq: 9.1, weight: 108, roller: 13.0, belt: "23100-KDU-900", oil: "0.8 L", fuelSystem: "Karburator Keihin CVK", notes: "Mbahnya matik Indonesia! Konstruksi mesin KDU sangat kuat & jadi basis matik modern." },
+      { id: "kymco-free-lx", brand: "Kymco", name: "Free LX 115", year: "2006–2010", era: "2000-2009", engineCode: "KFA", cc: 111.0, bore: 50.0, stroke: 56.6, cr: 9.3, hp: 8.2, tq: 8.4, weight: 102, roller: 12.0, belt: "23100-KFA-900", oil: "0.8 L", fuelSystem: "Karburator Keihin", notes: "Tanki bensin di depan dekat dek kaki. Kepraktisan jempolan." },
+
+      // VESPA / PIAGGIO
+      { id: "vespa-sprint-150", brand: "Vespa/Piaggio", name: "Vespa Sprint 150 i-Get", year: "2016–2026", era: "2010-2017", engineCode: "i-Get 3V", cc: 154.8, bore: 58.0, stroke: 58.6, cr: 10.5, hp: 11.6, tq: 12.0, weight: 120, roller: 15.0, belt: "1A008323", oil: "1.2 L", fuelSystem: "i-Get Electronic Injection", notes: "Ikonik Italian Style. Menggunakan per CVT Malossi 1500 & roller 12g bikin akselerasi ngacir." },
+      { id: "vespa-gts-300", brand: "Vespa/Piaggio", name: "Vespa GTS 300 HPE", year: "2019–2026", era: "2018-2026", engineCode: "HPE 4V", cc: 278.3, bore: 75.0, stroke: 63.0, cr: 11.5, hp: 23.8, tq: 26.0, weight: 160, roller: 17.0, belt: "1A002341", oil: "1.3 L", fuelSystem: "Magneti Marelli FI", notes: "Super matik 300cc. Torsi melekit untuk jalan tol & touring antar kota." },
+
+      // EV LISTRIK
+      { id: "ev-polytron-fox-r", brand: "EV Listrik", name: "Polytron Fox-R", year: "2023–2026", era: "2018-2026", engineCode: "HUB-3KW", cc: 0.0, bore: 0.0, stroke: 0.0, cr: 0.0, hp: 4.0, tq: 18.0, weight: 115, roller: 0.0, belt: "Direct Hub Motor", oil: "0.0 L", fuelSystem: "Baterai LiFePO4 3.7 kWh", notes: "EV lokal paling diminati. Torsi instan 18 Nm tanpa transmisi CVT konvensional." },
+      { id: "ev-alva-cervo", brand: "EV Listrik", name: "Alva Cervo Mid-Drive", year: "2023–2026", era: "2018-2026", engineCode: "MID-9KW", cc: 0.0, bore: 0.0, stroke: 0.0, cr: 0.0, hp: 13.3, tq: 53.5, weight: 135, roller: 0.0, belt: "Timing Belt Direct", oil: "0.0 L", fuelSystem: "Dual Lithium-ion 1.8 kWh", notes: "Performa sekelas matik 150cc dengan Boost Button. Torsi 53.5 Nm di roda!" }
+    ];
+
+    // Selected comparison items array (max 3)
+    let selectedCompareIds = [];
+    let currentViewMode = "grid";
+
+    /**
+     * INITIALIZATION & EVENT DELEGATION (CRITICAL BUG FIX #3)
+     */
+    document.addEventListener("DOMContentLoaded", function() {
+      try {
+        initBackgroundControls();
+        initNavigationTabs();
+        initArchiveSection();
+        initEngineCalculator();
+        initCVTSimulator();
+        initPortingCalculator();
+        initDynoSection();
+      } catch (err) {
+        console.error("Error initializing app:", err);
+      }
+    });
+
+    /**
+     * BACKGROUND CONTROLS SYSTEM
+     */
+    function initBackgroundControls() {
+      const bgPhoto = document.getElementById("bg-photo-layer");
+      const bgOverlay = document.getElementById("bg-overlay-layer");
+      const opacitySlider = document.getElementById("bg-opacity-slider");
+      const opacityVal = document.getElementById("bg-opacity-val");
+      const blurSlider = document.getElementById("bg-blur-slider");
+      const blurVal = document.getElementById("bg-blur-val");
+      const uploadInput = document.getElementById("bg-upload-input");
+
+      if (opacitySlider) {
+        opacitySlider.addEventListener("input", function(e) {
+          const val = e.target.value;
+          bgOverlay.style.backgroundColor = `rgba(11, 15, 23, ${val / 100})`;
+          opacityVal.textContent = val + "%";
+        });
+      }
+
+      if (blurSlider) {
+        blurSlider.addEventListener("input", function(e) {
+          const val = e.target.value;
+          bgOverlay.style.backdropFilter = `blur(${val}px)`;
+          bgOverlay.style.webkitBackdropFilter = `blur(${val}px)`;
+          blurVal.textContent = val + "px";
+        });
+      }
+
+      if (uploadInput) {
+        uploadInput.addEventListener("change", function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+              bgPhoto.style.backgroundImage = `url('${evt.target.result}')`;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    }
+
+    /**
+     * TAB NAVIGATION SYSTEM
+     */
+    function initNavigationTabs() {
+      document.addEventListener("click", function(e) {
+        const tabBtn = e.target.closest("[data-tab]");
+        if (tabBtn) {
+          const targetTab = tabBtn.getAttribute("data-tab");
+          
+          // Toggle Active Button
+          document.querySelectorAll("[data-tab]").forEach(btn => btn.classList.remove("active"));
+          tabBtn.classList.add("active");
+
+          // Toggle Visible Section
+          document.querySelectorAll(".tab-content").forEach(sec => {
+            sec.classList.add("hidden");
+            sec.classList.remove("block");
+          });
+
+          const activeSec = document.getElementById(`tab-${targetTab}`);
+          if (activeSec) {
+            activeSec.classList.remove("hidden");
+            activeSec.classList.add("block");
+          }
+
+          // Trigger Canvas redraw if Dyno tab opened
+          if (targetTab === "dyno") {
+            setTimeout(renderDynoChart, 50);
+          }
+        }
+
+        // Action Modals Close
+        const closeBtn = e.target.closest("[data-action='close-modal']");
+        if (closeBtn || e.target.classList.contains("modal-backdrop")) {
+          document.querySelectorAll(".modal-backdrop").forEach(m => m.classList.remove("active"));
+        }
+      });
+    }
+
+    /**
+     * TAB 1: ARCHIVE SYSTEM LOGIC
+     */
+    function initArchiveSection() {
+      const searchInput = document.getElementById("archive-search");
+      const brandSelect = document.getElementById("filter-brand");
+      const eraSelect = document.getElementById("filter-era");
+      const ccSelect = document.getElementById("filter-cc");
+      const compareBtn = document.getElementById("btn-open-compare");
+
+      function updateRender() {
+        const query = (searchInput.value || "").toLowerCase().trim();
+        const brand = brandSelect.value;
+        const era = eraSelect.value;
+        const ccRange = ccSelect.value;
+
+        const filtered = matikariaDatabase.filter(item => {
+          // Search query
+          const matchQuery = !query || item.name.toLowerCase().includes(query) || item.engineCode.toLowerCase().includes(query);
+          
+          // Brand filter
+          const matchBrand = (brand === "ALL") || (item.brand === brand);
+
+          // Era filter
+          const matchEra = (era === "ALL") || (item.era === era);
+
+          // CC Filter
+          let matchCC = true;
+          if (ccRange === "100-115") matchCC = item.cc >= 90 && item.cc <= 119;
+          else if (ccRange === "125-135") matchCC = item.cc >= 120 && item.cc <= 140;
+          else if (ccRange === "150-160") matchCC = item.cc >= 145 && item.cc <= 170;
+          else if (ccRange === "200+") matchCC = item.cc >= 200 || item.cc === 0; // EV included
+
+          return matchQuery && matchBrand && matchEra && matchCC;
+        });
+
+        document.getElementById("archive-count").textContent = `Ditemukan: ${filtered.length} Motor`;
+
+        renderArchiveData(filtered);
+      }
+
+      // Event listeners for filters
+      if (searchInput) searchInput.addEventListener("input", updateRender);
+      if (brandSelect) brandSelect.addEventListener("change", updateRender);
+      if (eraSelect) eraSelect.addEventListener("change", updateRender);
+      if (ccSelect) ccSelect.addEventListener("change", updateRender);
+
+      // View mode buttons handler
+      document.addEventListener("click", function(e) {
+        const viewBtn = e.target.closest("[data-action='set-view-mode']");
+        if (viewBtn) {
+          document.querySelectorAll("[data-action='set-view-mode']").forEach(b => {
+            b.classList.remove("active", "bg-vermilion", "text-white");
+            b.classList.add("text-slate-400");
+          });
+          viewBtn.classList.add("active", "bg-vermilion", "text-white");
+          viewBtn.classList.remove("text-slate-400");
+
+          currentViewMode = viewBtn.getAttribute("data-value");
+          updateRender();
+        }
+
+        // Open Spec Detail Modal
+        const specCard = e.target.closest("[data-action='open-spec']");
+        if (specCard) {
+          const id = specCard.getAttribute("data-id");
+          const bike = matikariaDatabase.find(b => b.id === id);
+          if (bike) openSpecDetailModal(bike);
+        }
+
+        // Toggle Compare Item
+        const cmpBtn = e.target.closest("[data-action='toggle-compare']");
+        if (cmpBtn) {
+          e.stopPropagation();
+          const id = cmpBtn.getAttribute("data-id");
+          if (selectedCompareIds.includes(id)) {
+            selectedCompareIds = selectedCompareIds.filter(i => i !== id);
+          } else {
+            if (selectedCompareIds.length >= 3) {
+              alert("Maksimal komparasi 3 motor sekaligus!");
+              return;
+            }
+            selectedCompareIds.push(id);
+          }
+          document.getElementById("compare-count").textContent = selectedCompareIds.length;
+          updateRender();
+        }
+      });
+
+      if (compareBtn) {
+        compareBtn.addEventListener("click", openCompareModal);
+      }
+
+      updateRender();
+    }
+
+    function renderArchiveData(items) {
+      const target = document.getElementById("archive-render-target");
+      if (!target) return;
+
+      if (items.length === 0) {
+        target.innerHTML = `
+          <div class="glass-card rounded-2xl p-8 text-center text-slate-400 space-y-2">
+            <i class="fa-solid fa-folder-open text-3xl text-vermilion mb-2"></i>
+            <p>Data motor matik tidak ditemukan. Coba kata kunci atau filter lain.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentViewMode === "grid") {
+        target.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${items.map(bike => {
+              const isCompared = selectedCompareIds.includes(bike.id);
+              return `
+                <div data-action="open-spec" data-id="${bike.id}" class="glass-card hover:glass-card-accent rounded-2xl p-5 border border-white/10 hover:border-vermilion/50 transition cursor-pointer flex flex-col justify-between group space-y-4">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-carbon-900 border border-white/10 text-slate-400">${bike.brand}</span>
+                      <span class="text-xs font-mono font-bold text-vermilion">${bike.engineCode}</span>
+                    </div>
+                    <h3 class="text-base font-bold text-white group-hover:text-vermilion transition">${bike.name}</h3>
+                    <p class="text-xs font-mono text-slate-400">${bike.year}</p>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 pt-3 border-t border-white/5 text-center text-xs">
+                    <div class="bg-carbon-900/80 p-2 rounded-lg">
+                      <span class="text-[9px] text-slate-400 font-mono block">CC</span>
+                      <span class="font-bold text-white font-mono">${bike.cc > 0 ? bike.cc : 'EV'}</span>
+                    </div>
+                    <div class="bg-carbon-900/80 p-2 rounded-lg">
+                      <span class="text-[9px] text-slate-400 font-mono block">BORE/STROKE</span>
+                      <span class="font-bold text-ambertech font-mono text-[11px]">${bike.bore > 0 ? bike.bore+'x'+bike.stroke : '-'}</span>
+                    </div>
+                    <div class="bg-carbon-900/80 p-2 rounded-lg">
+                      <span class="text-[9px] text-slate-400 font-mono block">ROLLER</span>
+                      <span class="font-bold text-cyan-400 font-mono">${bike.roller > 0 ? bike.roller+'g' : '-'}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-1">
+                    <span class="text-[11px] text-slate-400 font-mono"><i class="fa-solid fa-bolt text-ambertech mr-1"></i>${bike.hp} HP</span>
+                    <button data-action="toggle-compare" data-id="${bike.id}" 
+                            class="text-xs px-2.5 py-1 rounded-lg font-mono transition ${isCompared ? 'bg-ambertech text-carbon-900 font-bold' : 'bg-carbon-800 text-slate-300 hover:text-white border border-white/10'}">
+                      ${isCompared ? '<i class="fa-solid fa-check"></i> Compared' : '+ Bandingkan'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else if (currentViewMode === "table") {
+        target.innerHTML = `
+          <div class="glass-card rounded-2xl p-4 overflow-x-auto border border-white/10">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-white/10 font-mono text-slate-400 uppercase">
+                  <th class="p-3">Motor</th>
+                  <th class="p-3">Kode</th>
+                  <th class="p-3">Tahun</th>
+                  <th class="p-3">CC</th>
+                  <th class="p-3">Bore x Stroke</th>
+                  <th class="p-3">Roller</th>
+                  <th class="p-3">HP</th>
+                  <th class="p-3">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 font-mono">
+                ${items.map(b => `
+                  <tr class="hover:bg-white/5 cursor-pointer" data-action="open-spec" data-id="${b.id}">
+                    <td class="p-3 font-bold text-white">${b.name}</td>
+                    <td class="p-3 text-vermilion">${b.engineCode}</td>
+                    <td class="p-3 text-slate-400">${b.year}</td>
+                    <td class="p-3 text-slate-200">${b.cc > 0 ? b.cc + 'cc' : 'EV'}</td>
+                    <td class="p-3 text-ambertech">${b.bore > 0 ? b.bore+' x '+b.stroke : '-'}</td>
+                    <td class="p-3 text-cyan-400">${b.roller > 0 ? b.roller+'g' : '-'}</td>
+                    <td class="p-3 text-white">${b.hp} HP</td>
+                    <td class="p-3">
+                      <button data-action="toggle-compare" data-id="${b.id}" class="text-[11px] px-2 py-1 rounded bg-carbon-800 border border-white/10 text-slate-300">
+                        ${selectedCompareIds.includes(b.id) ? '✓ Compare' : '+ Bandingkan'}
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (currentViewMode === "timeline") {
+        target.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 border border-white/10 space-y-6">
+            <h3 class="text-sm font-bold font-mono text-vermilion uppercase tracking-wider">Linimasa Sejarah Evolusi Skutik Indonesia</h3>
+            <div class="relative border-l-2 border-vermilion/40 ml-4 space-y-6 pl-6">
+              ${items.map(b => `
+                <div class="relative group cursor-pointer" data-action="open-spec" data-id="${b.id}">
+                  <span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-vermilion border-2 border-carbon-900 group-hover:scale-125 transition"></span>
+                  <div class="bg-carbon-900/80 p-4 rounded-xl border border-white/5 hover:border-ambertech/50 transition space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-mono font-bold text-ambertech">${b.year}</span>
+                      <span class="text-[10px] font-mono text-slate-400">${b.brand}</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-white">${b.name} (${b.engineCode})</h4>
+                    <p class="text-xs text-slate-300">${b.notes}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    let activeModalBike = null;
+    function openSpecDetailModal(bike) {
+      activeModalBike = bike;
+      document.getElementById("modal-spec-title").textContent = bike.name;
+      document.getElementById("modal-spec-subtitle").textContent = `Era ${bike.year} | Kode Mesin: ${bike.engineCode} | Brand: ${bike.brand}`;
+      document.getElementById("modal-spec-bore-stroke").textContent = bike.bore > 0 ? `${bike.bore} x ${bike.stroke} mm` : 'EV Direct Motor';
+      document.getElementById("modal-spec-cc").textContent = bike.cc > 0 ? `${bike.cc} cc` : 'Electric';
+      document.getElementById("modal-spec-cr").textContent = bike.cr > 0 ? `${bike.cr} : 1` : '-';
+      document.getElementById("modal-spec-hp").textContent = `${bike.hp} HP`;
+      document.getElementById("modal-spec-tq").textContent = `${bike.tq} Nm`;
+      document.getElementById("modal-spec-weight").textContent = `${bike.weight} kg`;
+      document.getElementById("modal-spec-roller").textContent = bike.roller > 0 ? `${bike.roller} gram` : '-';
+      document.getElementById("modal-spec-belt").textContent = bike.belt;
+      document.getElementById("modal-spec-oil").textContent = bike.oil;
+      document.getElementById("modal-spec-notes").textContent = bike.notes;
+
+      const modal = document.getElementById("modal-spec-detail");
+      modal.classList.add("active");
+
+      // Set send to calc listener
+      const btnSend = document.getElementById("modal-btn-send-to-calc");
+      btnSend.onclick = function() {
+        if (bike.bore > 0) {
+          document.getElementById("calc-bore").value = bike.bore;
+          document.getElementById("calc-stroke").value = bike.stroke;
+          document.getElementById("calc-weight").value = bike.weight;
+          document.getElementById("cvt-roller").value = bike.roller > 0 ? bike.roller : 9;
+          document.getElementById("cvt-roller-val").textContent = (bike.roller > 0 ? bike.roller : 9) + "g";
+          
+          // Switch to calc tab
+          document.querySelector("[data-tab='engine']").click();
+          modal.classList.remove("active");
+        } else {
+          alert("Motor EV tidak menggunakan kalkulator piston internal pembakaran!");
+        }
+      };
+    }
+
+    function openCompareModal() {
+      if (selectedCompareIds.length === 0) {
+        alert("Pilih minimal 1 atau 2 motor terlebih dahulu dengan menekan tombol '+ Bandingkan' di kartu motor.");
+        return;
+      }
+
+      const grid = document.getElementById("compare-render-grid");
+      const bikes = selectedCompareIds.map(id => matikariaDatabase.find(b => b.id === id)).filter(Boolean);
+
+      grid.innerHTML = bikes.map(b => {
+        // Calculate PWR (HP per Ton / HP per kg)
+        const pwr = (b.hp / b.weight).toFixed(3);
+        return `
+          <div class="bg-carbon-900/90 p-5 rounded-xl border border-white/10 space-y-4">
+            <div class="border-b border-white/10 pb-2">
+              <span class="text-[10px] font-mono text-ambertech uppercase">${b.brand}</span>
+              <h3 class="text-base font-bold text-white">${b.name}</h3>
+              <span class="text-xs font-mono text-vermilion">Kode: ${b.engineCode}</span>
+            </div>
+
+            <div class="space-y-2 text-xs font-mono">
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span class="text-slate-400">CC Mesin:</span>
+                <span class="text-white font-bold">${b.cc > 0 ? b.cc + ' cc' : 'EV'}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span class="text-slate-400">Bore x Stroke:</span>
+                <span class="text-ambertech font-bold">${b.bore > 0 ? b.bore+' x '+b.stroke+' mm' : '-'}</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span class="text-slate-400">Output Tenaga:</span>
+                <span class="text-vermilion font-bold">${b.hp} HP</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span class="text-slate-400">Torsi Maksimal:</span>
+                <span class="text-white font-bold">${b.tq} Nm</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span class="text-slate-400">Bobot Kosong:</span>
+                <span class="text-slate-300 font-bold">${b.weight} kg</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5 bg-vermilion/10 p-2 rounded">
+                <span class="text-slate-200">Power to Weight (PWR):</span>
+                <span class="text-ambertech font-extrabold text-sm">${pwr} HP/kg</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById("modal-compare").classList.add("active");
+    }
+
+    /**
+     * TAB 2: ENGINE & COMPRESSION CALCULATOR LOGIC
+     */
+    function initEngineCalculator() {
+      const boreInput = document.getElementById("calc-bore");
+      const strokeInput = document.getElementById("calc-stroke");
+      const ccCombustInput = document.getElementById("calc-combustion-cc");
+      const gasketInput = document.getElementById("calc-gasket");
+      const rpmInput = document.getElementById("calc-rpm");
+      const weightInput = document.getElementById("calc-weight");
+      const btnReset = document.getElementById("btn-reset-engine-calc");
+
+      function calculateEngine() {
+        const bore = parseFloat(boreInput.value) || 50;
+        const stroke = parseFloat(strokeInput.value) || 57.9;
+        const vCombust = parseFloat(ccCombustInput.value) || 11.5;
+        const gasket = parseFloat(gasketInput.value) || 0.5;
+        const rpm = parseFloat(rpmInput.value) || 8500;
+
+        // 1. Calculate Real Swept Volume (CC)
+        // CC = (pi/4) * bore^2 * stroke / 1000
+        const sweptCC = (Math.PI / 4) * Math.pow(bore, 2) * stroke / 1000;
+
+        // Gasket volume addition (cc)
+        const gasketCC = (Math.PI / 4) * Math.pow(bore, 2) * (gasket) / 1000;
+
+        const totalClearanceCC = vCombust + gasketCC;
+
+        // Static Compression Ratio = (Swept + Clearance) / Clearance
+        const cr = (sweptCC + totalClearanceCC) / totalClearanceCC;
+
+        // 2. Mean Piston Speed (MPS) in m/s = (2 * stroke_in_meters * RPM) / 60
+        const mps = (2 * (stroke / 1000) * rpm) / 60;
+
+        // Update UI
+        document.getElementById("res-real-cc").textContent = sweptCC.toFixed(1);
+        document.getElementById("res-cr").textContent = cr.toFixed(2) + " : 1";
+        document.getElementById("res-mps-val").textContent = mps.toFixed(1) + " m/s";
+
+        // Update MPS bar & Status
+        const mpsBar = document.getElementById("res-mps-bar");
+        const mpsDesc = document.getElementById("res-mps-desc");
+        
+        let percentage = Math.min(100, (mps / 25) * 100);
+        mpsBar.style.width = percentage + "%";
+
+        if (mps < 18) {
+          mpsBar.className = "h-full bg-emerald-500 transition-all duration-300";
+          mpsDesc.textContent = "Aman untuk penggunaan harian & touring jarak jauh (MPS < 18 m/s).";
+        } else if (mps < 21) {
+          mpsBar.className = "h-full bg-ambertech transition-all duration-300";
+          mpsDesc.textContent = "Batas aman kompetisi harian / balap malam (MPS 18–21 m/s). Butuh oli berkualitas.";
+        } else {
+          mpsBar.className = "h-full bg-vermilion transition-all duration-300";
+          mpsDesc.textContent = "ZONA BAHAYA (MPS > 21 m/s)! Risiko stang seher patah / klep float tinggi!";
+        }
+
+        // Fuel Rec
+        const fuelRecEl = document.getElementById("res-fuel-rec");
+        if (cr < 9.5) {
+          fuelRecEl.textContent = "Pertalite (RON 90)";
+        } else if (cr < 10.8) {
+          fuelRecEl.textContent = "Pertamax (RON 92)";
+        } else if (cr < 12.2) {
+          fuelRecEl.textContent = "Pertamax Turbo (RON 98)";
+        } else {
+          fuelRecEl.textContent = "Bensol Racing / VP Fuel (RON 100+)";
+        }
+
+        // Est HP
+        const estHP = (sweptCC * (rpm / 1000) * 0.00015 * (cr / 9.5)).toFixed(1);
+        document.getElementById("res-est-hp").textContent = `${estHP} HP @ ${rpm} RPM`;
+      }
+
+      [boreInput, strokeInput, ccCombustInput, gasketInput, rpmInput, weightInput].forEach(input => {
+        if (input) input.addEventListener("input", calculateEngine);
+      });
+
+      if (btnReset) {
+        btnReset.addEventListener("click", function() {
+          boreInput.value = 50.0;
+          strokeInput.value = 57.9;
+          ccCombustInput.value = 11.5;
+          gasketInput.value = 0.5;
+          rpmInput.value = 8500;
+          calculateEngine();
+        });
+      }
+
+      calculateEngine();
+    }
+
+    /**
+     * TAB 3: CVT SIMULATOR & ANIMATED SVG LOGIC
+     */
+    function initCVTSimulator() {
+      const rollerSlider = document.getElementById("cvt-roller");
+      const rollerVal = document.getElementById("cvt-roller-val");
+      const crossToggle = document.getElementById("cvt-cross-toggle");
+      const crossContainer = document.getElementById("cvt-cross-container");
+      const roller2Input = document.getElementById("cvt-roller-2");
+      const perCvtSelect = document.getElementById("cvt-per-cvt");
+      const angleSelect = document.getElementById("cvt-angle");
+      const gearRatioInput = document.getElementById("cvt-gear-ratio");
+      const rpmSweepSlider = document.getElementById("cvt-rpm-sweep");
+      const rpmVal = document.getElementById("cvt-rpm-val");
+
+      function updateCVT() {
+        const roller1 = parseFloat(rollerSlider.value) || 9;
+        rollerVal.textContent = roller1.toFixed(1) + "g";
+
+        let avgRoller = roller1;
+        if (crossToggle && crossToggle.checked) {
+          crossContainer.classList.remove("hidden");
+          const roller2 = parseFloat(roller2Input.value) || 10;
+          avgRoller = (roller1 + roller2) / 2;
+        } else if (crossContainer) {
+          crossContainer.classList.add("hidden");
+        }
+
+        document.getElementById("res-avg-roller").textContent = avgRoller.toFixed(1) + " gram";
+
+        const rpm = parseInt(rpmSweepSlider.value) || 6500;
+        rpmVal.textContent = rpm.toLocaleString() + " RPM";
+
+        const angle = parseFloat(angleSelect.value) || 13.5;
+        const gearRatio = parseFloat(gearRatioInput.value) || 9.8;
+        const perCvt = parseInt(perCvtSelect.value) || 1500;
+
+        // Calculate Front & Rear Pulley Belt Radii based on RPM & Roller Weight
+        // High RPM + Lighter Roller shifts belt outwards slowly, Heavy roller shifts faster
+        let shiftFactor = Math.min(1, Math.max(0, (rpm - 2500) / (9500 - (avgRoller * 200))));
+        
+        // Front radius: 35px to 65px
+        let frontR = 35 + (shiftFactor * 30);
+        // Rear radius: 60px to 30px
+        let rearR = 60 - (shiftFactor * 30);
+
+        const frontPulleyCircle = document.getElementById("svg-front-pulley");
+        const rearPulleyCircle = document.getElementById("svg-rear-pulley");
+        const vbeltPath = document.getElementById("svg-vbelt");
+
+        if (frontPulleyCircle) frontPulleyCircle.setAttribute("r", frontR);
+        if (rearPulleyCircle) rearPulleyCircle.setAttribute("r", rearR);
+
+        // Update SVG V-Belt path visually
+        if (vbeltPath) {
+          const dPath = `M 120 ${110 - frontR} L 380 ${110 - rearR} A ${rearR} ${rearR} 0 0 1 380 ${110 + rearR} L 120 ${110 + frontR} A ${frontR} ${frontR} 0 0 1 120 ${110 - frontR} Z`;
+          vbeltPath.setAttribute("d", dPath);
+        }
+
+        // Belt ratio = Front Radius / Rear Radius
+        const beltRatio = (frontR / rearR).toFixed(2);
+        document.getElementById("res-cvt-belt-ratio").textContent = beltRatio + " : 1";
+
+        // Top Speed Estimate
+        const topSpeed = Math.round((rpm / gearRatio) * (beltRatio * 0.14));
+        document.getElementById("res-top-speed").textContent = topSpeed + " km/h";
+
+        // Gredek Diagnosis
+        const gredekBox = document.getElementById("gredek-box");
+        const gredekTitle = document.getElementById("gredek-title");
+        const gredekDesc = document.getElementById("gredek-desc");
+
+        if (avgRoller < 7.5 && perCvt >= 2000) {
+          gredekTitle.textContent = "Potensi Gredek & Overshoot RPM!";
+          gredekDesc.textContent = "Roller terlalu ringan dipadu per CVT keras. RPM raung tinggi tapi motor jalan di tempat. Risiko mangkok ganda aus panas berlebih!";
+          gredekBox.className = "p-4 rounded-xl bg-vermilion/10 border border-vermilion/40 flex gap-3 items-start text-xs";
+        } else if (avgRoller > 13.0 && perCvt <= 1000) {
+          gredekTitle.textContent = "Akselerasi Lemot (Ngempos Bawah)";
+          gredekDesc.textContent = "Roller terlalu berat untuk per standar. Belt naik terlalu cepat sebelum torsi ideal tercapai.";
+          gredekBox.className = "p-4 rounded-xl bg-ambertech/10 border border-ambertech/40 flex gap-3 items-start text-xs";
+        } else {
+          gredekTitle.textContent = "Setelan Seimbang (Bebas Gredek & Smooth)";
+          gredekDesc.textContent = "Rasio bobot roller & tekanan per CVT harmonis. Transisi pergerakan pulley akan berjalan halus tanpa gertakan awal.";
+          gredekBox.className = "p-4 rounded-xl bg-emerald-950/80 border border-emerald-500/30 flex gap-3 items-start text-xs";
+        }
+      }
+
+      [rollerSlider, roller2Input, perCvtSelect, angleSelect, gearRatioInput, rpmSweepSlider].forEach(el => {
+        if (el) el.addEventListener("input", updateCVT);
+      });
+      if (crossToggle) crossToggle.addEventListener("change", updateCVT);
+
+      updateCVT();
+    }
+
+    /**
+     * TAB 4: PORTING & EXHAUST DESIGNER LOGIC
+     */
+    function initPortingCalculator() {
+      const vIn = document.getElementById("port-valve-in");
+      const vEx = document.getElementById("port-valve-ex");
+      const effSlider = document.getElementById("port-target-eff");
+      const effVal = document.getElementById("port-target-eff-val");
+
+      const exRpm = document.getElementById("ex-rpm");
+      const exCam = document.getElementById("ex-cam-duration");
+
+      function updatePorting() {
+        const valveIn = parseFloat(vIn.value) || 26;
+        const valveEx = parseFloat(vEx.value) || 22;
+        const eff = parseInt(effSlider.value) || 85;
+
+        effVal.textContent = `${eff}% (${eff > 88 ? 'Balap Drag/Roadrace' : 'Racing Harian'})`;
+
+        const portInDia = (valveIn * (eff / 100)).toFixed(1);
+        const portExDia = (valveEx * (eff / 100)).toFixed(1);
+
+        document.getElementById("res-port-in-dia").textContent = portInDia + " mm";
+        document.getElementById("res-port-ex-dia").textContent = portExDia + " mm";
+
+        // Exhaust Header Calculations
+        const rpm = parseFloat(exRpm.value) || 9000;
+        const camDur = parseFloat(exCam.value) || 250;
+
+        // Primary Header Inside Diameter = sqrt(CC / (Panjang * 0.8))
+        const primDia = (Math.sqrt(150 / 8500) * 185).toFixed(1);
+        const primLen = ((85000 / rpm) + (camDur / 10)).toFixed(1);
+        const secDia = (parseFloat(primDia) * 1.15).toFixed(1);
+
+        document.getElementById("res-ex-primary-dia").textContent = primDia + " mm";
+        document.getElementById("res-ex-primary-len").textContent = primLen + " cm";
+        document.getElementById("res-ex-secondary-dia").textContent = secDia + " mm";
+      }
+
+      [vIn, vEx, effSlider, exRpm, exCam].forEach(input => {
+        if (input) input.addEventListener("input", updatePorting);
+      });
+
+      updatePorting();
+    }
+
+    /**
+     * TAB 5: DYNO & DRAG LOG LOGIC
+     */
+    function initDynoSection() {
+      const btnRunDyno = document.getElementById("btn-dyno-run");
+      const btnSaveLog = document.getElementById("btn-save-log");
+      const setupNameInput = document.getElementById("log-setup-name");
+      const logsContainer = document.getElementById("dyno-logs-container");
+
+      if (btnRunDyno) {
+        btnRunDyno.addEventListener("click", function() {
+          renderDynoChart();
+        });
+      }
+
+      if (btnSaveLog) {
+        btnSaveLog.addEventListener("click", function() {
+          const name = setupNameInput.value.trim() || "Setup Telemetry " + new Date().toLocaleTimeString();
+          const hpPeak = document.getElementById("dyno-hp-peak").textContent;
+          const tqPeak = document.getElementById("dyno-tq-peak").textContent;
+          const time201 = document.getElementById("drag-201-time").textContent;
+
+          const existingLogs = JSON.parse(safeStorage.get("jmk_dyno_logs") || "[]");
+          existingLogs.unshift({
+            id: Date.now(),
+            name: name,
+            hp: hpPeak,
+            tq: tqPeak,
+            drag201: time201,
+            date: new Date().toLocaleDateString('id-ID')
+          });
+
+          safeStorage.set("jmk_dyno_logs", JSON.stringify(existingLogs));
+          setupNameInput.value = "";
+          renderSavedLogs();
+        });
+      }
+
+      renderSavedLogs();
+      window.addEventListener("resize", renderDynoChart);
+    }
+
+    function renderDynoChart() {
+      const canvas = document.getElementById("dyno-canvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw Grid Lines
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      for (let x = 40; x < w; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h - 30);
+        ctx.stroke();
+      }
+      for (let y = 20; y < h - 30; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(40, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Read current calculated CC / HP values from Engine Calc
+      const bore = parseFloat(document.getElementById("calc-bore")?.value || 50);
+      const stroke = parseFloat(document.getElementById("calc-stroke")?.value || 57.9);
+      const cc = (Math.PI / 4) * Math.pow(bore, 2) * stroke / 1000;
+      
+      const maxHP = (cc / 10) * 1.1;
+      const maxTQ = (cc / 10) * 1.0;
+
+      document.getElementById("dyno-hp-peak").textContent = maxHP.toFixed(1) + " HP";
+      document.getElementById("dyno-tq-peak").textContent = maxTQ.toFixed(1) + " Nm";
+
+      // Drag strip estimations
+      const weight = parseFloat(document.getElementById("calc-weight")?.value || 95);
+      const pwr = maxHP / weight;
+      const et201 = Math.max(7.2, (12.5 - (pwr * 28))).toFixed(2);
+      const et402 = (parseFloat(et201) * 1.6).toFixed(2);
+
+      document.getElementById("drag-201-time").textContent = et201 + " s";
+      document.getElementById("drag-402-time").textContent = et402 + " s";
+
+      // Draw Tuned HP Curve (Vermilion)
+      ctx.strokeStyle = "#FF3B1D";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const x = 40 + (i / 100) * (w - 60);
+        const normX = i / 100;
+        // Bell curve shape for HP
+        const hpVal = Math.sin(normX * Math.PI) * (h - 60) * 0.8;
+        const y = (h - 30) - hpVal;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Draw Tuned Torque Curve (Amber)
+      ctx.strokeStyle = "#F59E0B";
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const x = 40 + (i / 100) * (w - 60);
+        const normX = i / 100;
+        const tqVal = Math.sin((normX + 0.1) * Math.PI) * (h - 80) * 0.7;
+        const y = (h - 30) - tqVal;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function renderSavedLogs() {
+      const container = document.getElementById("dyno-logs-container");
+      const countEl = document.getElementById("dyno-log-count");
+      if (!container) return;
+
+      const logs = JSON.parse(safeStorage.get("jmk_dyno_logs") || "[]");
+      if (countEl) countEl.textContent = `${logs.length} Records`;
+
+      if (logs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic font-mono text-center py-2">Belum ada record dyno disimpan.</p>`;
+        return;
+      }
+
+      container.innerHTML = logs.map(log => `
+        <div class="bg-carbon-900 p-2.5 rounded-lg border border-white/5 flex items-center justify-between text-xs font-mono">
+          <div>
+            <span class="font-bold text-white block">${log.name}</span>
+            <span class="text-[10px] text-slate-400">${log.date} — HP: <strong class="text-vermilion">${log.hp}</strong> | 201m: ${log.drag201}</span>
+          </div>
+          <button data-action="delete-log" data-id="${log.id}" class="text-slate-500 hover:text-vermilion p-1">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+
+      // Delete log listener
+      container.querySelectorAll("[data-action='delete-log']").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const id = parseInt(this.getAttribute("data-id"));
+          const logs = JSON.parse(safeStorage.get("jmk_dyno_logs") || "[]").filter(l => l.id !== id);
+          safeStorage.set("jmk_dyno_logs", JSON.stringify(logs));
+          renderSavedLogs();
+        });
+      });
+    }
+  </script>
+</body>
+</html>
