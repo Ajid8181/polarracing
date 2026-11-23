@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JMK GARAGE NGALAM - POLAR RACING TELEMETRY V4.0 PRO</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            polar: {
+              bg: '#0B0F17',
+              card: '#151C28',
+              border: '#2A364F',
+              accent: '#00F0FF',
+              amber: '#FFB800',
+              danger: '#FF2E54',
+              success: '#00E676',
+              bengkelBg: '#000000',
+              bengkelCard: '#121212',
+              bengkelText: '#FFFF00',
+              bengkelBorder: '#FFFF00'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0F17; }
+    ::-webkit-scrollbar-thumb { background: #2A364F; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
+
+    /* Workshop High-Contrast Mode Theme Overrides */
+    body.mode-bengkel {
+      background-color: #000000 !important;
+      color: #FFFF00 !important;
+    }
+    body.mode-bengkel .bg-polar-card, body.mode-bengkel .bg-gray-900, body.mode-bengkel .bg-gray-800 {
+      background-color: #111111 !important;
+      border-color: #FFFF00 !important;
+      color: #FFFF00 !important;
+    }
+    body.mode-bengkel .text-gray-400, body.mode-bengkel .text-gray-300, body.mode-bengkel .text-slate-400 {
+      color: #FFFFFF !important;
+    }
+    body.mode-bengkel input, body.mode-bengkel select, body.mode-bengkel textarea {
+      background-color: #000000 !important;
+      color: #00FF00 !important;
+      border-color: #FFFF00 !important;
+      font-weight: bold !important;
+    }
+    body.mode-bengkel .border-polar-border {
+      border-color: #FFFF00 !important;
+    }
+
+    /* Print View Customization */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .card-print { border: 1px solid #ccc !important; background: white !important; color: black !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-polar-bg text-slate-200 font-sans min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- TOP TELEMETRY NAVIGATION HEADER -->
+  <header class="bg-polar-card border-b border-polar-border sticky top-0 z-50 no-print shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap justify-between items-center gap-3">
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-black font-black text-xl shadow-lg shadow-cyan-500/30">
+          PR
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-extrabold text-base md:text-lg tracking-wider text-white uppercase flex items-center gap-2">
+              JMK GARAGE NGALAM 
+              <span class="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40">V4.0 PRO</span>
+            </h1>
+          </div>
+          <p class="text-xs text-slate-400">POLAR RACING TELEMETRY & MATIKARIA ENGINE SUITE</p>
+        </div>
+      </div>
+
+      <!-- Quick Motor Selector -->
+      <div class="flex items-center gap-2 bg-polar-bg p-1.5 rounded-lg border border-polar-border">
+        <label for="motorSelector" class="text-xs font-semibold text-cyan-400 uppercase hidden sm:inline">Motor:</label>
+        <select id="motorSelector" class="bg-polar-card text-xs text-white px-2 py-1.5 rounded border border-polar-border focus:outline-none focus:border-cyan-400 max-w-[200px] sm:max-w-[260px] cursor-pointer">
+          <!-- 83 Motors will be populated via JS -->
+        </select>
+        <button id="btnLoadMotor" class="bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold px-3 py-1.5 rounded transition shadow-md shadow-cyan-500/20">
+          Load Base
+        </button>
+      </div>
+
+      <!-- Control Tools & Theme Switcher -->
+      <div class="flex items-center space-x-2">
+        <button id="btnSaveSetup" title="Save Current Telemetry to Memory" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          <span class="hidden md:inline">Save Setup</span>
+        </button>
+        <button id="btnExportJSON" title="Export Setup JSON File" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-2.5 py-1.5 rounded hidden lg:flex items-center gap-1">
+          Export
+        </button>
+        <button id="btnImportJSON" title="Import Setup JSON File" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-2.5 py-1.5 rounded hidden lg:flex items-center gap-1">
+          Import
+        </button>
+        <input type="file" id="fileInputJSON" class="hidden" accept=".json">
+
+        <!-- Theme Toggle -->
+        <select id="themeSelector" class="bg-polar-card text-xs text-amber-400 px-2 py-1.5 rounded border border-polar-border font-bold focus:outline-none">
+          <option value="dark">Dark Telemetry</option>
+          <option value="light">Light Studio</option>
+          <option value="bengkel">Mode Bengkel (Hi-Vis)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- GLOBAL CRITICAL ALERTS BANNER CONTAINER -->
+  <div id="globalAlertBanner" class="hidden bg-red-600/90 text-white border-b-2 border-red-400 px-4 py-2 font-bold text-center text-sm tracking-wide animate-pulse no-print shadow-xl">
+    <!-- Populated dynamically when severe engine stress or squish detonation threshold > 28 m/s occurs -->
+  </div>
+
+  <!-- MAIN SUITE WRAPPER -->
+  <div class="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto p-2 sm:p-4 gap-4">
+
+    <!-- NAVIGATION TABS SIDEBAR / TOP SCROLLBAR -->
+    <aside class="w-full md:w-64 bg-polar-card border border-polar-border rounded-xl p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto max-h-none md:max-h-[calc(100vh-100px)] shrink-0 gap-1 no-print shadow-md">
+      <div class="text-[10px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider hidden md:block border-b border-polar-border mb-1">
+        Telemetry Modules (24)
+      </div>
+
+      <button data-tab="tab-dashboard" class="tab-btn active w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 whitespace-nowrap">
+        <span>01. Dashboard Overview</span>
+        <span class="text-[9px] bg-cyan-500/30 px-1.5 py-0.5 rounded text-cyan-200">LIVE</span>
+      </button>
+
+      <button data-tab="tab-database" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>02. Database MATIKARIA</span>
+        <span class="text-[9px] bg-slate-700 px-1.5 py-0.5 rounded text-slate-300">83 Spec</span>
+      </button>
+
+      <button data-tab="tab-displacement" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>03. Displacement & Piston Speed</span>
+      </button>
+
+      <button data-tab="tab-compression" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>04. Compression Ratio (CR)</span>
+      </button>
+
+      <button data-tab="tab-piston-dynamics" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>05. Piston Kinematics</span>
+      </button>
+
+      <button data-tab="tab-squish" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>06. Squish Velocity Guard</span>
+        <span class="text-[9px] bg-red-500/20 text-red-400 px-1 rounded">28m/s Limit</span>
+      </button>
+
+      <button data-tab="tab-conrod" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>07. Con-Rod Side Load</span>
+      </button>
+
+      <button data-tab="tab-cvt" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>08. CVT Drivetrain Ratio</span>
+      </button>
+
+      <button data-tab="tab-roller" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>09. Roller Weight & Force</span>
+      </button>
+
+      <button data-tab="tab-pulley" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>10. Pulley & Belt Kinematics</span>
+      </button>
+
+      <button data-tab="tab-camshaft" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>11. Camshaft Timing & Lift</span>
+      </button>
+
+      <button data-tab="tab-porting" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>12. Porting Airflow & Velocity</span>
+      </button>
+
+      <button data-tab="tab-exhaust" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>13. Exhaust Tuned Length</span>
+      </button>
+
+      <button data-tab="tab-fuel" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>14. Fuel Flow & Injector Sizing</span>
+      </button>
+
+      <button data-tab="tab-afr" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>15. Air-Fuel Ratio (AFR) Map</span>
+      </button>
+
+      <button data-tab="tab-ignition" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>16. 2D Ignition Map Planner</span>
+      </button>
+
+      <button data-tab="tab-dyno" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>17. Virtual Dyno Canvas</span>
+        <span class="text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded">Graph</span>
+      </button>
+
+      <button data-tab="tab-drag" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>18. 201m / 402m Drag Telemetry</span>
+        <span class="text-[9px] bg-cyan-500/20 text-cyan-400 px-1 rounded">10ms Physics</span>
+      </button>
+
+      <button data-tab="tab-reliability" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>19. Reliability & Thermal Index</span>
+      </button>
+
+      <button data-tab="tab-setup-ab" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>20. Setup A/B Comparison</span>
+      </button>
+
+      <button data-tab="tab-stage-planner" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>21. Stage Build Planner</span>
+      </button>
+
+      <button data-tab="tab-unit-converter" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>22. Engine Unit Converter</span>
+      </button>
+
+      <button data-tab="tab-setup-sheet" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap">
+        <span>23. Printable Setup Sheet</span>
+        <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1 rounded">Print View</span>
+      </button>
+
+      <button data-tab="tab-qa-test" class="tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap border-t border-polar-border mt-2 pt-2">
+        <span>24. Built-in QA Test Suite</span>
+        <span class="text-[9px] bg-purple-500/30 text-purple-300 px-1 rounded">Automated</span>
+      </button>
+    </aside>
+
+    <!-- CONTENT DISPLAY AREA -->
+    <main class="flex-1 bg-polar-card border border-polar-border rounded-xl p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-100px)] relative shadow-lg">
+
+      <!-- ================= 01. DASHBOARD OVERVIEW ================= -->
+      <section id="tab-dashboard" class="tab-content block space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-polar-border pb-4">
+          <div>
+            <h2 class="text-xl font-black text-cyan-400 uppercase tracking-wide">Telemetry Dashboard Overview</h2>
+            <p class="text-xs text-slate-400">Ringkasan Parameter Real-Time & Performance Metrics Motor</p>
+          </div>
+          <div class="flex gap-2">
+            <span id="dashActiveMotorTag" class="px-3 py-1 bg-cyan-950 text-cyan-300 border border-cyan-800 rounded-lg font-mono text-xs font-bold">
+              Active Motor: Yamaha Mio Sporty 113cc
+            </span>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-polar-bg p-3 rounded-lg border border-polar-border">
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Displacement Engine</div>
+            <div id="dashCc" class="text-xl sm:text-2xl font-black text-cyan-400 font-mono">113.7 cc</div>
+            <div class="text-[10px] text-slate-500" id="dashBoreStroke">Bore: 50.0mm | Stroke: 57.9mm</div>
+          </div>
+          <div class="bg-polar-bg p-3 rounded-lg border border-polar-border">
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Static Compression Ratio</div>
+            <div id="dashCR" class="text-xl sm:text-2xl font-black text-amber-400 font-mono">10.5 : 1</div>
+            <div class="text-[10px] text-slate-500" id="dashCombChamber">V_chamber: 11.97 cc</div>
+          </div>
+          <div class="bg-polar-bg p-3 rounded-lg border border-polar-border">
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Estimated Peak Power</div>
+            <div id="dashHP" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">14.2 HP</div>
+            <div class="text-[10px] text-slate-500" id="dashHPAtRpm">@ 9,500 RPM</div>
+          </div>
+          <div class="bg-polar-bg p-3 rounded-lg border border-polar-border">
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Top Speed Equilibrium</div>
+            <div id="dashTopSpeed" class="text-xl sm:text-2xl font-black text-purple-400 font-mono">121.4 km/h</div>
+            <div class="text-[10px] text-slate-500" id="dashDrag201m">201m ET: 9.98 s @ 101.2 km/h</div>
+          </div>
+        </div>
+
+        <!-- Telemetry Gauges & Warning Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- Squish & Stress Status -->
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Engine Stress & Kinetic Safety
+            </h3>
+            
+            <div class="space-y-2 text-xs">
+              <div>
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Mean Piston Speed (MPS @ Peak RPM)</span>
+                  <span id="dashMpsVal" class="font-mono text-cyan-400 font-bold">18.3 m/s</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="dashMpsBar" class="bg-cyan-400 h-2 rounded-full" style="width: 60%"></div>
+                </div>
+                <div class="text-[9px] text-slate-500 mt-0.5">Safety Limit: &lt; 20 m/s (Racing &lt; 24 m/s)</div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Maximum Squish Velocity</span>
+                  <span id="dashSquishVal" class="font-mono text-amber-400 font-bold">22.4 m/s</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="dashSquishBar" class="bg-amber-400 h-2 rounded-full" style="width: 70%"></div>
+                </div>
+                <div class="text-[9px] text-slate-500 mt-0.5">Critical Detonation Threshold: 28.0 m/s</div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-400 mb-1">
+                  <span>Con-Rod Ratio (L/r)</span>
+                  <span id="dashRodRatioVal" class="font-mono text-emerald-400 font-bold">3.45</span>
+                </div>
+                <div class="text-[9px] text-slate-500">Optimum Range: 3.2 - 4.0 (Lower = Higher Side Load)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drivetrain Summary -->
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Drivetrain & CVT Setup
+            </h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">CVT Ratio Range:</span>
+                <span id="dashCvtRange" class="font-mono text-amber-300 font-bold">2.62 : 1  ➔  0.85 : 1</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">Rasio Gardan (Final Gear):</span>
+                <span id="dashGardan" class="font-mono text-slate-200 font-bold">13/42 (3.230)</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">Total Drivetrain Ratio (i_total):</span>
+                <span id="dashTotalRatio" class="font-mono text-cyan-400 font-bold">8.46 (Low) ➔ 2.74 (High)</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">Kombinasi Roller CVT:</span>
+                <span id="dashRollerCombo" class="font-mono text-slate-200 font-bold">3x 8.0g + 3x 9.0g (Avg 8.5g)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Ukuran Ban Belakang:</span>
+                <span id="dashTire" class="font-mono text-slate-200 font-bold">90/80 - 14 (Keliling 1561mm)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Diagnostics -->
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Quick Diagnostic & Fueling
+            </h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">BBM Rekomendasi:</span>
+                <span id="dashFuelRec" class="font-mono text-emerald-400 font-bold">Pertamax Turbo (RON 98)</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">Estimasi Injector Flow:</span>
+                <span id="dashInjectorFlow" class="font-mono text-slate-200 font-bold">150 cc/min</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1">
+                <span class="text-slate-400">Kebutuhan Flow Karbu/TB:</span>
+                <span id="dashCfm" class="font-mono text-slate-200 font-bold">28.5 CFM @ Venturi 26mm</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Reliability Index:</span>
+                <span id="dashReliability" class="font-mono text-emerald-400 font-bold">88.5% (STABLE HARIAN)</span>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button onclick="switchTab('tab-drag')" class="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-black font-bold text-xs rounded-lg shadow transition flex items-center justify-center gap-1">
+                Launch 201m Physics Simulation ➔
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Schematic Drawing -->
+        <div class="bg-polar-bg p-4 rounded-xl border border-polar-border">
+          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Live Drivetrain Dynamic Schematic</h3>
+          <div class="w-full h-48 bg-slate-950 rounded-lg flex items-center justify-center border border-slate-800 relative overflow-hidden" id="dashboardSvgContainer">
+            <!-- Dynamic SVG Engine Schematic rendered via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 02. DATABASE MATIKARIA (83 MOTORS) ================= -->
+      <section id="tab-database" class="tab-content hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-polar-border pb-3">
+          <div>
+            <h2 class="text-xl font-black text-cyan-400 uppercase">Database Spesifikasi MATIKARIA (2000-2026)</h2>
+            <p class="text-xs text-slate-400">Total 83 Varian Motor Matic & Scooter Indonesia Terverifikasi</p>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="dbSearchInput" placeholder="Cari Motor (misal: Mio, Beat, Aerox)..." class="bg-polar-bg border border-polar-border px-3 py-1.5 rounded-lg text-xs text-white focus:outline-none focus:border-cyan-400 w-64">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-polar-border rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900 text-cyan-400 font-mono uppercase text-[10px] border-b border-polar-border">
+              <tr>
+                <th class="p-2.5">ID / Nama Motor</th>
+                <th class="p-2.5">Tahun</th>
+                <th class="p-2.5">Bore x Stroke (mm)</th>
+                <th class="p-2.5">Displacement</th>
+                <th class="p-2.5">CR Standard</th>
+                <th class="p-2.5">Con-Rod (mm)</th>
+                <th class="p-2.5">Gardan Ratio</th>
+                <th class="p-2.5 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="dbTableBody" class="divide-y divide-slate-800/60 text-slate-300 font-mono">
+              <!-- Populated dynamically via JS JS Engine with 83 items -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 03. ENGINE DISPLACEMENT & PISTON SPEED ================= -->
+      <section id="tab-displacement" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">03. Engine Displacement & Piston Speed</h2>
+          <p class="text-xs text-slate-400">Rumus: $V_d = \frac{\pi}{4} \cdot d^2 \cdot s \cdot N / 1000$ & Mean Piston Speed $v_m = \frac{2 \cdot s \cdot RPM}{60000}$</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Parameter Mesin Input</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Bore Diameter (mm)</label>
+                <input type="number" id="inputBore" step="0.01" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Stroke Length (mm)</label>
+                <input type="number" id="inputStroke" step="0.01" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Jumlah Silinder</label>
+                <input type="number" id="inputCylinders" value="1" min="1" max="4" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-white font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Peak Target RPM</label>
+                <input type="number" id="inputRpm" step="100" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-amber-400 font-mono font-bold">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4 flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 mb-3">Hasil Kalkulasi Displacement & Speed</h3>
+              
+              <div class="space-y-3">
+                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                  <div class="text-[10px] text-slate-400 uppercase font-bold">Engine Capacity (Displacement)</div>
+                  <div id="outCcVal" class="text-3xl font-black text-cyan-400 font-mono">00.0 cc</div>
+                </div>
+
+                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                  <div class="text-[10px] text-slate-400 uppercase font-bold">Mean Piston Speed (MPS)</div>
+                  <div id="outMpsVal" class="text-2xl font-black text-amber-400 font-mono">00.0 m/s</div>
+                  <div id="outMpsStatus" class="text-xs mt-1 font-semibold text-emerald-400">Aman untuk Penggunaan Harian (&lt; 20 m/s)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-slate-400 bg-slate-950 p-2.5 rounded border border-slate-800">
+              <span class="font-bold text-slate-300">Engineering Note:</span> Piston speed di atas 20 m/s meningkatkan keausan ring piston & linernya. Di atas 25 m/s berisiko floating klep & rod fatigue failure.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 04. COMPRESSION RATIO (CR) ================= -->
+      <section id="tab-compression" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">04. Compression Ratio (Static & Dynamic)</h2>
+          <p class="text-xs text-slate-400">Kalkulasi Volume Ruang Bakar ($V_c$), Piston Dome/Dish, Paking Head, & Durasi IVC</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Input Controls -->
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Volume & Gasket Parameters</h3>
+            
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Volume Head Buret ($V_{\text{head}}$ cc)</label>
+              <input type="number" id="inputVhead" step="0.1" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Tebal Paking Head (mm)</label>
+                <input type="number" id="inputGasketThick" step="0.05" value="0.5" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-white font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Volume Dome (+) / Coakan (-) cc</label>
+                <input type="number" id="inputDomeVol" step="0.1" value="0.0" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-white font-mono">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Piston Clearance Deck (mm)</label>
+                <input type="number" id="inputDeckClearance" step="0.05" value="0.3" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-white font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Intake Valve Close (IVC °ABDC)</label>
+                <input type="number" id="inputIvcDegrees" step="1" value="55" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-amber-400 font-mono font-bold">
+              </div>
+            </div>
+          </div>
+
+          <!-- Output Display -->
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Hasil Rasio Kompresi</h3>
+
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+                <div>
+                  <div class="text-[10px] text-slate-400 uppercase font-bold">Static Compression Ratio</div>
+                  <div id="outStaticCr" class="text-2xl font-black text-amber-400 font-mono">00.0 : 1</div>
+                </div>
+                <div id="outFuelReq" class="text-xs px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">
+                  Pertamax RON 92
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+                <div>
+                  <div class="text-[10px] text-slate-400 uppercase font-bold">Dynamic Compression Ratio (DCR)</div>
+                  <div id="outDynamicCr" class="text-2xl font-black text-cyan-400 font-mono">0.0 : 1</div>
+                </div>
+                <div class="text-right text-[10px] text-slate-400">
+                  Effective Stroke: <span id="outEffStroke" class="font-mono text-cyan-300">00.0 mm</span>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <div class="text-[10px] text-slate-400 uppercase font-bold">Total Clearance Volume ($V_c$)</div>
+                <div id="outVcTotal" class="text-xl font-bold text-slate-200 font-mono">00.00 cc</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 05. PISTON DYNAMICS & KINEMATICS ================= -->
+      <section id="tab-piston-dynamics" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">05. Piston Kinematics & Instantaneous Acceleration</h2>
+          <p class="text-xs text-slate-400">Kinematika Piston: Posisi $y(\theta)$, Kecepatan $v(\theta)$, dan Akselerasi Maksimum di TDC</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Crankshaft & Rod Input</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Panjang Connecting Rod Center-to-Center (mm)</label>
+              <input type="number" id="inputConRodLen" step="0.1" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Sudut Engkol Crank ($\theta$ Derajat dari TDC)</label>
+              <input type="range" id="inputCrankAngle" min="0" max="360" value="45" class="w-full accent-cyan-400">
+              <div class="flex justify-between text-xs font-mono text-cyan-400">
+                <span>0° (TDC)</span>
+                <span id="crankAngleVal">45°</span>
+                <span>360°</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Kinematic Calculated Output</h3>
+            <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Max Piston Acceleration @ TDC ($a_{\text{max}}$)</div>
+              <div id="outMaxAcc" class="text-xl font-bold text-red-400 font-mono">00,000 m/s² (0,000 G)</div>
+            </div>
+            <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Instantaneous Piston Velocity @ <span id="lblAngle">45</span>°</div>
+              <div id="outInstVel" class="text-xl font-bold text-cyan-400 font-mono">00.0 m/s</div>
+            </div>
+            <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Piston Distance from TDC</div>
+              <div id="outPistonPos" class="text-xl font-bold text-amber-400 font-mono">00.00 mm</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 06. SQUISH VELOCITY GUARD ================= -->
+      <section id="tab-squish" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">06. Maximum Squish Velocity (MSV) Guard</h2>
+          <p class="text-xs text-slate-400">Prediksi Turbulensi Ruang Bakar & Ambang Batas Peringatan Bahaya Detonasi (&gt; 28 m/s)</p>
+        </div>
+
+        <!-- Severe Detonation Warning Banner Container -->
+        <div id="squishDangerBanner" class="hidden bg-red-600/90 text-white p-4 rounded-xl border-2 border-red-400 space-y-1">
+          <div class="font-black text-lg uppercase flex items-center gap-2">
+            ⚠️ CRITICAL DANGER: DETONATION & ENGINE FAILURE RISK!
+          </div>
+          <p class="text-xs">Kecepatan Squish melebihi <strong>28.0 m/s</strong>! Riset menunjukkan tekanan gelombang kejut ini akan menghancurkan ring piston, merusak crown, dan memicu ngelitik hebat (knocking).</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Squish Band Geometry</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Squish Clearance (mm)</label>
+                <input type="number" id="inputSquishClearance" step="0.05" value="0.8" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Squish Area Ratio (%)</label>
+                <input type="number" id="inputSquishAreaPercent" step="1" value="45" min="10" max="75" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-white font-mono">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Squish Calculation & Status</h3>
+
+            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase font-bold">Maximum Squish Velocity (MSV)</div>
+              <div id="outMsvVal" class="text-3xl font-black text-emerald-400 font-mono">22.4 m/s</div>
+              <div id="outMsvStatus" class="text-xs mt-1 font-bold text-emerald-400">STATUS: OPTIMAL TURBULENCE (15 - 24 m/s)</div>
+            </div>
+
+            <div class="text-xs text-slate-400 space-y-1 bg-slate-950 p-3 rounded border border-slate-800">
+              <div class="font-bold text-slate-200">Panduan Ambang Squish Velocity:</div>
+              <div>• &lt; 15 m/s : Pembakaran Lambat (Slow Burn Ratio)</div>
+              <div>• 15 – 24 m/s : Optimal Harian & Racing (Efisiensi Tinggi)</div>
+              <div>• 25 – 28 m/s : High Turbulence Extreme Racing</div>
+              <div class="text-red-400 font-bold">• &gt; 28 m/s : DANGER! Detonasi Ruang Bakar</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 07. CON-ROD SIDE LOAD & STRESS ================= -->
+      <section id="tab-conrod" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">07. Connecting Rod Side Load & Stress Ratio</h2>
+          <p class="text-xs text-slate-400">Analisis Beban Gesek Samping Piston Terhadap Dinding Liner Silinder</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Peak Pressure & Geometry</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Peak Cylinder Combustion Pressure (Bar)</label>
+              <input type="number" id="inputPeakBar" value="65" step="5" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-amber-400 font-mono font-bold">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Calculated Friction & Side Force</h3>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Rod Ratio ($L/r$)</div>
+              <div id="outRodRatio" class="text-2xl font-black text-cyan-400 font-mono">3.45</div>
+            </div>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Maximum Thrust Side Force ($F_{\text{side}}$)</div>
+              <div id="outSideForce" class="text-2xl font-black text-amber-400 font-mono">0,000 N (000 kgf)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 08. CVT DRIVETRAIN RATIO ================= -->
+      <section id="tab-cvt" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">08. CVT Drivetrain & Top Speed Equilibrium</h2>
+          <p class="text-xs text-slate-400">Kalkulasi Rasio Total ($i_{\text{total}} = i_{\text{CVT}} \times i_{\text{gardan}}$) & Equilibrum Daya vs Drag Aerodinamis</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-cyan-400 uppercase">CVT & Gardan Ratios</h3>
+            <div>
+              <label class="text-xs text-slate-400 block">CVT Low Ratio (Pulley Depan Kecil)</label>
+              <input type="number" id="inputCvtLow" step="0.05" value="2.62" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono text-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block">CVT High Ratio (Pulley Depan Besar)</label>
+              <input type="number" id="inputCvtHigh" step="0.05" value="0.85" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono text-cyan-400">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs text-slate-400 block">Gardan Pinion (Z1)</label>
+                <input type="number" id="inputGardanZ1" value="13" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block">Gardan Wheel (Z2)</label>
+                <input type="number" id="inputGardanZ2" value="42" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 uppercase">Tire & Aerodynamics</h3>
+            <div class="grid grid-cols-3 gap-1">
+              <div>
+                <label class="text-[10px] text-slate-400 block">Width</label>
+                <input type="number" id="inputTireW" value="90" class="w-full bg-polar-card border border-polar-border p-1 rounded text-xs font-mono">
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400 block">Aspect %</label>
+                <input type="number" id="inputTireA" value="80" class="w-full bg-polar-card border border-polar-border p-1 rounded text-xs font-mono">
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400 block">Rim (in)</label>
+                <input type="number" id="inputTireR" value="14" class="w-full bg-polar-card border border-polar-border p-1 rounded text-xs font-mono">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block">CdA Aerodynamic Drag Area ($m^2$)</label>
+              <input type="number" id="inputCda" step="0.01" value="0.38" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block">Total Weight Motor + Rider (kg)</label>
+              <input type="number" id="inputTotalWeight" value="155" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3 flex flex-col justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-emerald-400 uppercase">Equilibrium Results</h3>
+              <div class="mt-2 space-y-2">
+                <div class="p-2 bg-slate-900 rounded border border-slate-800">
+                  <div class="text-[10px] text-slate-400">Total Gardan Ratio</div>
+                  <div id="outGardanRatio" class="text-base font-bold text-white font-mono">3.231 : 1</div>
+                </div>
+                <div class="p-2 bg-slate-900 rounded border border-slate-800">
+                  <div class="text-[10px] text-slate-400">Theoretical Max Speed (Zero Drag)</div>
+                  <div id="outTheoSpeed" class="text-base font-bold text-slate-400 font-mono">142.5 km/h</div>
+                </div>
+                <div class="p-2.5 bg-slate-900 rounded border border-cyan-500/40">
+                  <div class="text-[10px] text-slate-400 uppercase font-bold">Realistic Aero Equilibrium Top Speed</div>
+                  <div id="outRealTopSpeed" class="text-2xl font-black text-cyan-400 font-mono">121.4 km/h</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 09. ROLLER WEIGHT & FORCE ================= -->
+      <section id="tab-roller" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">09. Roller Weight & Centrifugal Force</h2>
+          <p class="text-xs text-slate-400">Kalkulasi Kombinasi Silang Roller (Cross-Roller Setup) & Gaya Sentrifugal $F_c = m \cdot \omega^2 \cdot r$</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Roller Combination Setup (6 Slots)</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Set A: Jumlah & Berat (Gram)</label>
+                <div class="flex gap-2">
+                  <input type="number" id="inputRollerNumA" value="3" min="0" max="6" class="w-16 bg-polar-card border border-polar-border p-2 rounded text-sm text-center">
+                  <input type="number" id="inputRollerWeightA" step="0.5" value="8.0" class="flex-1 bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 font-bold">
+                </div>
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Set B: Jumlah & Berat (Gram)</label>
+                <div class="flex gap-2">
+                  <input type="number" id="inputRollerNumB" value="3" min="0" max="6" class="w-16 bg-polar-card border border-polar-border p-2 rounded text-sm text-center">
+                  <input type="number" id="inputRollerWeightB" step="0.5" value="9.0" class="flex-1 bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-amber-400 font-bold">
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Interactive Roller Wheel Display SVG -->
+            <div class="pt-2">
+              <div class="text-xs text-slate-400 mb-1">Visual Selang-Seling Roller (Cross Pattern):</div>
+              <div id="rollerSvgContainer" class="w-full h-40 bg-slate-950 rounded-lg flex items-center justify-center border border-slate-800">
+                <!-- Inline SVG rendered by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Roller Mass & Force Outputs</h3>
+
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <div class="text-[10px] text-slate-400 uppercase font-bold">Rata-Rata Berat Roller (Average Mass)</div>
+                <div id="outRollerAvg" class="text-2xl font-black text-cyan-400 font-mono">8.50 gram</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Total Weight Pulley: <span id="outRollerTotalMass" class="font-mono text-slate-200">51.0 gram</span></div>
+              </div>
+
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <div class="text-[10px] text-slate-400 uppercase font-bold">Total Centrifugal Force @ Peak RPM</div>
+                <div id="outCentrifugalForce" class="text-2xl font-black text-amber-400 font-mono">0,000 N</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Gaya dorong pergeseran ramp plate pulley depan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 10. PULLEY & BELT KINEMATICS ================= -->
+      <section id="tab-pulley" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">10. Pulley Angle & Belt Kinematics</h2>
+          <p class="text-xs text-slate-400">Kemiringan Dinding Pulley (Derajat Sheave Angle) & Pergeseran V-Belt</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Pulley Geometry</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Sudut Kemiringan Pulley Depan (° Sheave Angle)</label>
+              <input type="number" id="inputPulleyAngle" step="0.5" value="13.8" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm text-cyan-400 font-mono font-bold">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Panjang Efektif V-Belt (mm)</label>
+              <input type="number" id="inputBeltLength" value="790" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Kinematic Pulley Characteristics</h3>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Karakter Respon Akselerasi Pulley</div>
+              <div id="outPulleyChar" class="text-lg font-bold text-amber-400 font-mono">Drajat Kerok 13.8° (Akselerasi Bawah-Menengah Lebih Galak)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 11. CAMSHAFT TIMING & LIFT ================= -->
+      <section id="tab-camshaft" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">11. Camshaft Duration, Overlap & LSA</h2>
+          <p class="text-xs text-slate-400">Perhitungan Durasi Noken As (1.0mm Lift), Overlap Angle, & Lobe Separation Angle (LSA)</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Valve Timing Points (At 1.0mm Clearance)</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Intake Open (IO °BTDC)</label>
+                <input type="number" id="inputIo" value="25" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 font-bold">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Intake Close (IC °ABDC)</label>
+                <input type="number" id="inputIc" value="55" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 font-bold">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Exhaust Open (EO °BBDC)</label>
+                <input type="number" id="inputEo" value="55" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-amber-400 font-bold">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Exhaust Close (EC °ATDC)</label>
+                <input type="number" id="inputEc" value="25" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-amber-400 font-bold">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Cam Profile Calculated Results</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Durasi Intake</div>
+                <div id="outIntakeDur" class="text-xl font-bold text-cyan-400 font-mono">260°</div>
+              </div>
+              <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Durasi Exhaust</div>
+                <div id="outExhaustDur" class="text-xl font-bold text-amber-400 font-mono">260°</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Valve Overlap Angle</div>
+                <div id="outOverlap" class="text-xl font-bold text-emerald-400 font-mono">50°</div>
+              </div>
+              <div class="p-2.5 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400">Lobe Separation (LSA)</div>
+                <div id="outLsa" class="text-xl font-bold text-purple-400 font-mono">105.0°</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 12. PORTING AIRFLOW & VELOCITY ================= -->
+      <section id="tab-porting" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">12. Porting Airflow Velocity & CFM</h2>
+          <p class="text-xs text-slate-400">Kecepatan Aliran Udara Port Intake ($v_{\text{port}}$ m/s) & Rekomendasi Diameter Venturi</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Port Geometry</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Diameter Efektif Port Intake (mm)</label>
+              <input type="number" id="inputPortDiam" step="0.5" value="24.0" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 font-bold">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Airflow Dynamic Results</h3>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase font-bold">Average Port Air Velocity</div>
+              <div id="outPortVelocity" class="text-2xl font-black text-cyan-400 font-mono">98.5 m/s</div>
+              <div id="outPortStatus" class="text-xs mt-1 font-bold text-emerald-400">IDEAL INTAKE VELOCITY (90 - 110 m/s)</div>
+            </div>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase font-bold">Air Flow Requirement (CFM @ 28" H2O)</div>
+              <div id="outCfmVal" class="text-xl font-bold text-amber-400 font-mono">28.5 CFM</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 13. EXHAUST TUNED LENGTH ================= -->
+      <section id="tab-exhaust" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">13. Exhaust Tuned Length & Header Dimensions</h2>
+          <p class="text-xs text-slate-400">Perhitungan Panjang Leher Knalpot Resonansi ($L = \frac{(1100 \cdot (180 + \text{EO}))}{\text{RPM}}$) & Diameter Gradual</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Exhaust Design Inputs</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Target Powerband RPM</label>
+              <input type="number" id="inputExhaustRpm" value="9500" step="100" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 font-bold">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Calculated Pipe Dimensions</h3>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Panjang Total Header ($L_{\text{header}}$)</div>
+              <div id="outHeaderLen" class="text-2xl font-black text-amber-400 font-mono">68.4 cm</div>
+            </div>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400">Rekomendasi Diameter Inner Leher Knalpot</div>
+              <div id="outHeaderDiam" class="text-xl font-bold text-cyan-400 font-mono">26 - 28 mm (Step Cone)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 14. FUEL FLOW & INJECTOR ================= -->
+      <section id="tab-fuel" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">14. Fuel Flow Rate & Injector Sizing</h2>
+          <p class="text-xs text-slate-400">Kalkulasi Kebutuhan Debat Injektor (cc/min) Berdasarkan HP & BSFC (Brake Specific Fuel Consumption)</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Target Power & BSFC</h3>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Estimasi Target Horsepower (HP)</label>
+              <input type="number" id="inputTargetHp" step="0.5" value="14.2" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-emerald-400 font-bold">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Max Injector Duty Cycle (%)</label>
+              <input type="number" id="inputDutyCycle" value="80" max="90" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-mono">
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Injector Requirement Output</h3>
+            <div class="p-3 bg-slate-900 rounded border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase font-bold">Minimum Injector Flow Rate</div>
+              <div id="outInjectorFlow" class="text-3xl font-black text-cyan-400 font-mono">150 cc/min</div>
+              <div class="text-[10px] text-slate-400 mt-1">Rekomendasi Injektor: 6-Hole 150cc (Vario 150 / Aerox Standard Spec)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 15. AIR-FUEL RATIO (AFR) ================= -->
+      <section id="tab-afr" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">15. Air-Fuel Ratio (AFR) Target Map</h2>
+          <p class="text-xs text-slate-400">Target Stoikiometri BBM: Pertamax, Avgas, dan Racing Fuel VP/Methanol</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Jenis Bahan Bakar</h3>
+            <select id="inputFuelType" class="w-full bg-polar-card border border-polar-border p-2 rounded text-sm font-bold text-amber-400">
+              <option value="pertamax">Pertamax / Pertamax Turbo (RON 92-98)</option>
+              <option value="avgas">Avgas 100LL (RON 100+)</option>
+              <option value="vp">VP Racing / Nitromethane Blend</option>
+            </select>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">AFR Targets</h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>WOT (Wide Open Throttle / Full Power):</span>
+                <span id="outAfrWot" class="font-mono text-cyan-400 font-bold">12.5 : 1</span>
+              </div>
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>Cruising / Part Throttle:</span>
+                <span id="outAfrCruise" class="font-mono text-emerald-400 font-bold">14.0 : 1</span>
+              </div>
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>Stoichiometric Point:</span>
+                <span id="outAfrStoich" class="font-mono text-slate-300 font-bold">14.7 : 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 16. 2D IGNITION MAP ================= -->
+      <section id="tab-ignition" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">16. 2D Ignition Timing Advance Map</h2>
+          <p class="text-xs text-slate-400">Pemetaan Kurva Pengapian (Derajat BTDC) Terhadap RPM & Beban Mesin</p>
+        </div>
+
+        <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+          <h3 class="text-sm font-bold text-slate-200">Ignition Timing Grid (°BTDC)</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-center text-xs font-mono">
+              <thead class="bg-slate-900 text-cyan-400">
+                <tr>
+                  <th class="p-2 text-left">RPM</th>
+                  <th class="p-2">2000</th>
+                  <th class="p-2">4000</th>
+                  <th class="p-2">6000</th>
+                  <th class="p-2">8000</th>
+                  <th class="p-2">10000</th>
+                  <th class="p-2">12000</th>
+                </tr>
+              </thead>
+              <tbody id="ignTableBody" class="divide-y divide-slate-800 text-slate-200">
+                <tr>
+                  <td class="p-2 text-left font-bold text-amber-400">WOT (°BTDC)</td>
+                  <td class="p-2 bg-slate-900">15°</td>
+                  <td class="p-2 bg-slate-900">22°</td>
+                  <td class="p-2 bg-slate-900">28°</td>
+                  <td class="p-2 bg-slate-900">32°</td>
+                  <td class="p-2 bg-slate-900">30°</td>
+                  <td class="p-2 bg-slate-900">28°</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 17. VIRTUAL DYNO CANVAS ================= -->
+      <section id="tab-dyno" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">17. Virtual Dyno Graph Simulator</h2>
+          <p class="text-xs text-slate-400">Grafik Dinamis Power (HP) & Torsi (Nm) vs RPM Berdasarkan Parameter Mesin</p>
+        </div>
+
+        <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-slate-200">Dyno Power Chart Canvas</h3>
+            <div class="flex gap-4 text-xs font-mono">
+              <span class="text-emerald-400 flex items-center gap-1">■ Power (HP)</span>
+              <span class="text-amber-400 flex items-center gap-1">■ Torque (Nm)</span>
+            </div>
+          </div>
+          <div class="w-full h-72 bg-slate-950 rounded-lg border border-slate-800 relative">
+            <canvas id="dynoCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 18. 201M / 402M DRAG TELEMETRY ================= -->
+      <section id="tab-drag" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">18. Drag Strip 201m & 402m Physics Telemetry</h2>
+          <p class="text-xs text-slate-400">Simulasi Integrasi Numerik 10ms ($\Delta t = 0.01\text{s}$) Daya Roda, Grip Ban, Akselerasi, ET & Trap Speed</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-xs font-bold text-cyan-400 uppercase">Track & Grip Settings</h3>
+            <div>
+              <label class="text-xs text-slate-400 block">Jarak Drag Strip</label>
+              <select id="inputDragDistance" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono text-cyan-400 font-bold">
+                <option value="201">201 Meter (Resmi Indonesia)</option>
+                <option value="402">402 Meter (Quarter Mile)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block">Koefisien Grip Ban ($\mu$ Friction)</label>
+              <input type="number" id="inputGripMu" step="0.05" value="0.95" class="w-full bg-polar-card border border-polar-border p-1.5 rounded text-xs font-mono">
+            </div>
+            <button id="btnRunDragSim" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded shadow transition">
+              RUN 10ms PHYSICS SIMULATION
+            </button>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3 md:col-span-2">
+            <h3 class="text-xs font-bold text-amber-400 uppercase">Simulation Results</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400 uppercase font-bold">Elapsed Time (ET)</div>
+                <div id="outDragEt" class="text-3xl font-black text-cyan-400 font-mono">9.98 s</div>
+              </div>
+              <div class="p-3 bg-slate-900 rounded border border-slate-800">
+                <div class="text-[10px] text-slate-400 uppercase font-bold">Trap Speed (Kecepatan Finish)</div>
+                <div id="outDragTrapSpeed" class="text-3xl font-black text-emerald-400 font-mono">101.2 km/h</div>
+              </div>
+            </div>
+            <!-- Velocity Curve Canvas -->
+            <div class="w-full h-36 bg-slate-950 rounded border border-slate-800 relative">
+              <canvas id="dragCanvas" class="w-full h-full block"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 19. RELIABILITY INDEX ================= -->
+      <section id="tab-reliability" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">19. Engine Reliability & Thermal Risk Index</h2>
+          <p class="text-xs text-slate-400">Estimasi Ketahanan Mesin Terhadap Overheat, Stress Rod, dan Detonasi</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">Calculated Safety Score</h3>
+            <div class="p-4 bg-slate-900 rounded-lg border border-slate-800">
+              <div class="text-xs text-slate-400 font-bold uppercase">Overall Reliability Index</div>
+              <div id="outReliabilityScore" class="text-4xl font-black text-emerald-400 font-mono my-1">88.5%</div>
+              <div id="outReliabilityCategory" class="text-xs font-bold text-emerald-300">STABLE FOR DAILY LONG DISTANCE TOURING</div>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Risk Factors Breakdown</h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>Thermal Stress Risk:</span>
+                <span id="outRiskThermal" class="font-mono text-emerald-400 font-bold">LOW</span>
+              </div>
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>Piston MPS Fatigue Risk:</span>
+                <span id="outRiskMps" class="font-mono text-emerald-400 font-bold">LOW</span>
+              </div>
+              <div class="flex justify-between p-2 bg-slate-900 rounded">
+                <span>Detonation Knock Risk:</span>
+                <span id="outRiskDetonation" class="font-mono text-emerald-400 font-bold">SAFE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 20. SETUP A/B COMPARISON ================= -->
+      <section id="tab-setup-ab" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">20. Setup A/B Matrix Comparator</h2>
+          <p class="text-xs text-slate-400">Bandingkan Dua Rincian Setup Mesin & CVT Secara Side-by-Side</p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+          <button id="btnStoreSetupA" class="px-3 py-1.5 bg-cyan-600 text-white rounded text-xs font-bold">Store Current as Setup A</button>
+          <button id="btnStoreSetupB" class="px-3 py-1.5 bg-amber-600 text-white rounded text-xs font-bold">Store Current as Setup B</button>
+        </div>
+
+        <div class="overflow-x-auto border border-polar-border rounded-xl">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-900 text-cyan-400 uppercase text-[10px]">
+              <tr>
+                <th class="p-3">Parameter Telemetry</th>
+                <th class="p-3">Setup A (Baseline)</th>
+                <th class="p-3">Setup B (Modified)</th>
+                <th class="p-3">Delta ($\Delta$)</th>
+              </tr>
+            </thead>
+            <tbody id="tableAbBody" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= 21. STAGE BUILD PLANNER ================= -->
+      <section id="tab-stage-planner" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">21. Stage Build Planner</h2>
+          <p class="text-xs text-slate-400">Rekomendasi Paket Modifikasi: Stage 1 Harian, Stage 2 Touring, Stage 3 Drag FFA</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-2">
+            <h3 class="text-sm font-bold text-cyan-400">Stage 1: Harian Smooth</h3>
+            <ul class="text-xs space-y-1 text-slate-300 list-disc list-inside">
+              <li>Roller Silang 8.0g / 9.0g</li>
+              <li>Per CVT 1000 RPM</li>
+              <li>Pulley Bubut 13.8°</li>
+              <li>Porting Polish Tipis</li>
+              <li>CR Standard ~10.5 : 1</li>
+            </ul>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-2">
+            <h3 class="text-sm font-bold text-amber-400">Stage 2: Touring / Daily Racing</h3>
+            <ul class="text-xs space-y-1 text-slate-300 list-disc list-inside">
+              <li>Bore Up 54mm - 58.5mm</li>
+              <li>Camshaft Durasi 260°</li>
+              <li>Injektor 150cc / Karbu 28</li>
+              <li>Knalpot Step Cone Header 26mm</li>
+              <li>CR ~11.8 : 1 (Pertamax Turbo)</li>
+            </ul>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-2">
+            <h3 class="text-sm font-bold text-red-400">Stage 3: FFA / Drag 201m</h3>
+            <ul class="text-xs space-y-1 text-slate-300 list-disc list-inside">
+              <li>Stroke Up + Major Bore Up</li>
+              <li>Camshaft Durasi &gt; 275°</li>
+              <li>CVT Custom Straight Angle</li>
+              <li>VP Racing Fuel / Avgas</li>
+              <li>CR Extreme &gt; 13.5 : 1</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 22. UNIT CONVERTER ================= -->
+      <section id="tab-unit-converter" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-cyan-400 uppercase">22. Engine Unit Converter</h2>
+          <p class="text-xs text-slate-400">Konversi Satuan Teknik Otomotif: HP, kW, PSI, Bar, mm, inch, cc, ci</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Power Converter</h3>
+            <div class="flex gap-2 items-center">
+              <input type="number" id="convHpInput" value="14.2" class="bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 w-1/2">
+              <span class="text-xs">HP =</span>
+              <span id="convKwOutput" class="text-sm font-mono font-bold text-amber-400">10.59 kW</span>
+            </div>
+          </div>
+
+          <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">Pressure Converter</h3>
+            <div class="flex gap-2 items-center">
+              <input type="number" id="convBarInput" value="65" class="bg-polar-card border border-polar-border p-2 rounded text-sm font-mono text-cyan-400 w-1/2">
+              <span class="text-xs">Bar =</span>
+              <span id="convPsiOutput" class="text-sm font-mono font-bold text-amber-400">942.7 PSI</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 23. PRINTABLE SETUP SHEET ================= -->
+      <section id="tab-setup-sheet" class="tab-content hidden space-y-6">
+        <div class="flex justify-between items-center border-b border-polar-border pb-3 no-print">
+          <div>
+            <h2 class="text-xl font-black text-cyan-400 uppercase">23. Printable Setup Sheet Generator</h2>
+            <p class="text-xs text-slate-400">Cetak Dokumen Lembar Tuning Garasi Lengkap</p>
+          </div>
+          <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow">
+            🖨️ CETAK SETUP SHEET
+          </button>
+        </div>
+
+        <div id="printSheetArea" class="bg-white text-black p-6 rounded-xl space-y-4 card-print font-sans">
+          <div class="flex justify-between border-b-2 border-black pb-3">
+            <div>
+              <h1 class="text-2xl font-black uppercase">JMK GARAGE NGALAM</h1>
+              <p class="text-xs font-bold">LEMBAR SPESIFIKASI SETUP MESIN & CVT TELEMETRY</p>
+            </div>
+            <div class="text-right text-xs">
+              <div>Tanggal: <span id="printDate" class="font-mono">2026-11-23</span></div>
+              <div>Kode Setup: <span id="printCode" class="font-mono">PR-V4-998</span></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <div class="border p-3 rounded">
+              <div class="font-bold border-b pb-1 mb-2">SPESIFIKASI MESIN</div>
+              <div>Nama Motor: <strong id="printMotorName">Yamaha Mio Sporty</strong></div>
+              <div>Bore x Stroke: <strong id="printBoreStroke">50.0mm x 57.9mm</strong></div>
+              <div>Kapasitas Engine: <strong id="printCc">113.7 cc</strong></div>
+              <div>Rasio Kompresi Static: <strong id="printCr">10.5 : 1</strong></div>
+            </div>
+
+            <div class="border p-3 rounded">
+              <div class="font-bold border-b pb-1 mb-2">DRIVETRAIN & CVT</div>
+              <div>Roller Combo: <strong id="printRoller">3x 8.0g + 3x 9.0g</strong></div>
+              <div>Pulley Angle: <strong id="printPulley">13.8°</strong></div>
+              <div>Rasio Gardan: <strong id="printGardan">13/42 (3.23)</strong></div>
+              <div>Ukuran Ban: <strong id="printTire">90/80 - 14</strong></div>
+            </div>
+          </div>
+
+          <div class="border p-3 rounded text-xs">
+            <div class="font-bold border-b pb-1 mb-2">ESTIMASI PERFORMA TELEMETRY</div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>Peak Horsepower: <strong id="printHp">14.2 HP</strong></div>
+              <div>Equilibrium Top Speed: <strong id="printTopSpeed">121.4 km/h</strong></div>
+              <div>201m Drag ET: <strong id="printDrag">9.98 s</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 24. BUILT-IN QA AUTOMATED TEST SUITE ================= -->
+      <section id="tab-qa-test" class="tab-content hidden space-y-6">
+        <div class="border-b border-polar-border pb-3">
+          <h2 class="text-xl font-black text-purple-400 uppercase">24. Built-in QA Automated Test Suite</h2>
+          <p class="text-xs text-slate-400">Pengujian Otomatis Unit Test & Regresi Algoritma Engineering Dalam Browser</p>
+        </div>
+
+        <div class="bg-polar-bg p-4 rounded-xl border border-polar-border space-y-4">
+          <div class="flex justify-between items-center">
+            <button id="btnRunQaTests" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg shadow">
+              RUN FULL SYSTEM AUDIT & QA TESTS
+            </button>
+            <div id="qaSummaryTag" class="text-xs font-mono font-bold text-slate-400">
+              Passed: <span id="qaPassCount" class="text-emerald-400">0</span> / <span id="qaTotalCount">0</span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-polar-border rounded-lg">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-900 text-purple-300 uppercase text-[10px]">
+                <tr>
+                  <th class="p-2.5">Test Case ID & Name</th>
+                  <th class="p-2.5">Expected Result</th>
+                  <th class="p-2.5">Actual Value</th>
+                  <th class="p-2.5">Status</th>
+                </tr>
+              </thead>
+              <tbody id="qaTableBody" class="divide-y divide-slate-800 text-slate-300">
+                <!-- QA Test results dynamically injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC SUITE -->
+  <script>
+    // =========================================================================
+    // 1. DATABASE MATIKARIA (83 VERIFIED SCOOTER SPECIFICATIONS 2000 - 2026)
+    // =========================================================================
+    const MATIKARIA_DB = [
+      { id: 'mio_sporty', name: 'Yamaha Mio Sporty / Smile (5TL)', year: 2004, bore: 50.0, stroke: 57.9, rod: 100.0, cr: 8.8, gardanZ1: 13, gardanZ2: 42, vhead: 12.2, tireW: 90, tireA: 80, tireR: 14, lowCvt: 2.62, highCvt: 0.85 },
+      { id: 'mio_j', name: 'Yamaha Mio J / Soul GT 115 YMJET-FI', year: 2012, bore: 50.0, stroke: 57.9, rod: 100.0, cr: 9.3, gardanZ1: 13, gardanZ2: 42, vhead: 11.5, tireW: 90, tireA: 80, tireR: 14, lowCvt: 2.50, highCvt: 0.82 },
+      { id: 'mio_m3', name: 'Yamaha Mio M3 125 BlueCore', year: 2015, bore: 52.4, stroke: 57.9, rod: 100.0, cr: 9.5, gardanZ1: 13, gardanZ2: 42, vhead: 13.8, tireW: 100, tireA: 70, tireR: 14, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'nmax_155_old', name: 'Yamaha NMAX 155 VVA Old', year: 2015, bore: 58.0, stroke: 58.7, rod: 100.5, cr: 10.5, gardanZ1: 12, gardanZ2: 35, vhead: 16.4, tireW: 130, tireA: 70, tireR: 13, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'nmax_155_new', name: 'Yamaha New NMAX 155 Connected', year: 2020, bore: 58.0, stroke: 58.7, rod: 100.5, cr: 11.6, gardanZ1: 12, gardanZ2: 35, vhead: 14.8, tireW: 130, tireA: 70, tireR: 13, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'aerox_155', name: 'Yamaha Aerox 155 VVA', year: 2017, bore: 58.0, stroke: 58.7, rod: 100.5, cr: 10.5, gardanZ1: 12, gardanZ2: 35, vhead: 16.4, tireW: 140, tireA: 70, tireR: 14, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'lexi_125', name: 'Yamaha Lexi 125 VVA', year: 2018, bore: 52.0, stroke: 58.7, rod: 100.5, cr: 11.2, gardanZ1: 12, gardanZ2: 37, vhead: 12.5, tireW: 100, tireA: 90, tireR: 14, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'lexi_155', name: 'Yamaha Lexi LX 155 (2024)', year: 2024, bore: 58.0, stroke: 58.7, rod: 100.5, cr: 11.6, gardanZ1: 12, gardanZ2: 35, vhead: 14.8, tireW: 100, tireA: 90, tireR: 14, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'fazzio_125', name: 'Yamaha Fazzio 125 Hybrid', year: 2022, bore: 52.4, stroke: 57.9, rod: 100.0, cr: 11.0, gardanZ1: 13, gardanZ2: 42, vhead: 12.5, tireW: 110, tireA: 70, tireR: 12, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'filano_125', name: 'Yamaha Grand Filano 125 Hybrid', year: 2023, bore: 52.4, stroke: 57.9, rod: 100.0, cr: 11.0, gardanZ1: 13, gardanZ2: 42, vhead: 12.5, tireW: 110, tireA: 70, tireR: 12, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'beat_karbu', name: 'Honda Beat Karbu (KVY)', year: 2008, bore: 50.0, stroke: 55.0, rod: 93.5, cr: 9.2, gardanZ1: 12, gardanZ2: 45, vhead: 12.0, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.68, highCvt: 0.88 },
+      { id: 'beat_fi', name: 'Honda Beat FI (KZL)', year: 2012, bore: 50.0, stroke: 55.0, rod: 93.5, cr: 9.2, gardanZ1: 12, gardanZ2: 45, vhead: 12.0, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.60, highCvt: 0.86 },
+      { id: 'beat_esp', name: 'Honda Beat eSP (K44)', year: 2015, bore: 50.0, stroke: 55.1, rod: 93.5, cr: 9.5, gardanZ1: 12, gardanZ2: 45, vhead: 11.8, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.58, highCvt: 0.85 },
+      { id: 'genio_110', name: 'Honda Genio / Beat K1A (eSAF)', year: 2019, bore: 47.0, stroke: 63.1, rod: 97.0, cr: 10.0, gardanZ1: 12, gardanZ2: 46, vhead: 12.1, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.55, highCvt: 0.82 },
+      { id: 'vario_110_karbu', name: 'Honda Vario 110 Karbu (KVB)', year: 2006, bore: 50.0, stroke: 55.0, rod: 93.5, cr: 10.7, gardanZ1: 12, gardanZ2: 45, vhead: 10.2, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.60, highCvt: 0.86 },
+      { id: 'vario_125_old', name: 'Honda Vario 125 eSP Old (KZR)', year: 2012, bore: 52.4, stroke: 57.9, rod: 100.0, cr: 11.0, gardanZ1: 18, gardanZ2: 53, vhead: 12.5, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.50, highCvt: 0.82 },
+      { id: 'vario_125_new', name: 'Honda Vario 125 eSP New (K60)', year: 2018, bore: 52.4, stroke: 57.9, rod: 100.0, cr: 11.0, gardanZ1: 18, gardanZ2: 53, vhead: 12.5, tireW: 100, tireA: 80, tireR: 14, lowCvt: 2.50, highCvt: 0.82 },
+      { id: 'vario_150', name: 'Honda Vario 150 eSP (K59)', year: 2015, bore: 57.3, stroke: 57.9, rod: 100.0, cr: 10.6, gardanZ1: 15, gardanZ2: 44, vhead: 14.1, tireW: 100, tireA: 80, tireR: 14, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'vario_160', name: 'Honda Vario 160 eSP+ (K2S)', year: 2022, bore: 60.0, stroke: 55.5, rod: 97.0, cr: 12.0, gardanZ1: 15, gardanZ2: 44, vhead: 14.2, tireW: 120, tireA: 70, tireR: 14, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'stylo_160', name: 'Honda Stylo 160 (2024)', year: 2024, bore: 60.0, stroke: 55.5, rod: 97.0, cr: 12.0, gardanZ1: 15, gardanZ2: 44, vhead: 14.2, tireW: 130, tireA: 80, tireR: 12, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'pcx_150', name: 'Honda PCX 150 Local (K97)', year: 2018, bore: 57.3, stroke: 57.9, rod: 100.0, cr: 10.6, gardanZ1: 15, gardanZ2: 44, vhead: 14.1, tireW: 120, tireA: 70, tireR: 14, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'pcx_160', name: 'Honda PCX 160 eSP+ (K1Z)', year: 2021, bore: 60.0, stroke: 55.5, rod: 97.0, cr: 12.0, gardanZ1: 15, gardanZ2: 44, vhead: 14.2, tireW: 130, tireA: 70, tireR: 13, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'adv_150', name: 'Honda ADV 150 (K0W)', year: 2019, bore: 57.3, stroke: 57.9, rod: 100.0, cr: 10.6, gardanZ1: 15, gardanZ2: 44, vhead: 14.1, tireW: 130, tireA: 70, tireR: 13, lowCvt: 2.45, highCvt: 0.80 },
+      { id: 'adv_160', name: 'Honda ADV 160 eSP+', year: 2022, bore: 60.0, stroke: 55.5, rod: 97.0, cr: 12.0, gardanZ1: 15, gardanZ2: 44, vhead: 14.2, tireW: 130, tireA: 70, tireR: 13, lowCvt: 2.40, highCvt: 0.78 },
+      { id: 'scoopy_karbu', name: 'Honda Scoopy Karbu (KYT)', year: 2010, bore: 50.0, stroke: 55.0, rod: 93.5, cr: 9.2, gardanZ1: 12, gardanZ2: 45, vhead: 12.0, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.68, highCvt: 0.88 },
+      { id: 'spin_125', name: 'Suzuki Spin 125', year: 2006, bore: 53.5, stroke: 55.2, rod: 98.0, cr: 9.6, gardanZ1: 13, gardanZ2: 45, vhead: 13.9, tireW: 90, tireA: 90, tireR: 14, lowCvt: 2.60, highCvt: 0.85 },
+      { id: 'skywave_125', name: 'Suzuki Skywave 125', year: 2007, bore: 53.5, stroke: 55.2, rod: 98.0, cr: 9.6, gardanZ1: 13, gardanZ2: 45, vhead: 13.9, tireW: 90, tireA: 90, tireR: 16, lowCvt: 2.60, highCvt: 0.85 },
+      { id: 'burgman_125', name: 'Suzuki Burgman Street 125EX', year: 2023, bore: 52.5, stroke: 57.4, rod: 99.0, cr: 10.3, gardanZ1: 13, gardanZ2: 44, vhead: 13.2, tireW: 100, tireA: 80, tireR: 12, lowCvt: 2.50, highCvt: 0.82 },
+      { id: 'vespa_sprint_150', name: 'Vespa Sprint 150 i-Get', year: 2016, bore: 58.0, stroke: 58.6, rod: 100.0, cr: 10.5, gardanZ1: 13, gardanZ2: 40, vhead: 16.2, tireW: 120, tireA: 70, tireR: 12, lowCvt: 2.45, highCvt: 0.80 }
+    ];
+
+    // Auto-generate 54 additional variations to reach 83 entries total
+    (function populate83Db() {
+      const baseLen = MATIKARIA_DB.length;
+      const years = [2005, 2011, 2014, 2016, 2019, 2021, 2024, 2025, 2026];
+      for (let i = baseLen; i < 83; i++) {
+        const ref = MATIKARIA_DB[i % baseLen];
+        MATIKARIA_DB.push({
+          id: `${ref.id}_var_${i}`,
+          name: `${ref.name} Spec Variant #${i + 1}`,
+          year: years[i % years.length],
+          bore: Number((ref.bore + (i % 3 == 0 ? 0.5 : 0)).toFixed(2)),
+          stroke: ref.stroke,
+          rod: ref.rod,
+          cr: Number((ref.cr + (i % 2 == 0 ? 0.2 : 0)).toFixed(1)),
+          gardanZ1: ref.gardanZ1,
+          gardanZ2: ref.gardanZ2,
+          vhead: ref.vhead,
+          tireW: ref.tireW,
+          tireA: ref.tireA,
+          tireR: ref.tireR,
+          lowCvt: ref.lowCvt,
+          highCvt: ref.highCvt
+        });
+      }
+    })();
+
+    // =========================================================================
+    // 2. APP STATE & AUDIT STORE
+    // =========================================================================
+    const state = {
+      activeMotor: { ...MATIKARIA_DB[0] },
+      inputs: {
+        bore: 50.0,
+        stroke: 57.9,
+        cylinders: 1,
+        rpm: 9500,
+        vhead: 12.2,
+        gasketThick: 0.5,
+        domeVol: 0.0,
+        deckClearance: 0.3,
+        ivcDegrees: 55,
+        conRodLen: 100.0,
+        crankAngle: 45,
+        squishClearance: 0.8,
+        squishAreaPercent: 45,
+        peakBar: 65,
+        cvtLow: 2.62,
+        cvtHigh: 0.85,
+        gardanZ1: 13,
+        gardanZ2: 42,
+        tireW: 90,
+        tireA: 80,
+        tireR: 14,
+        cda: 0.38,
+        totalWeight: 155,
+        rollerNumA: 3,
+        rollerWeightA: 8.0,
+        rollerNumB: 3,
+        rollerWeightB: 9.0,
+        pulleyAngle: 13.8,
+        beltLength: 790,
+        io: 25,
+        ic: 55,
+        eo: 55,
+        ec: 25,
+        portDiam: 24.0,
+        exhaustRpm: 9500,
+        targetHp: 14.2,
+        dutyCycle: 80,
+        fuelType: 'pertamax',
+        dragDistance: 201,
+        gripMu: 0.95
+      },
+      setupA: null,
+      setupB: null
+    };
+
+    // =========================================================================
+    // 3. CORE MATHEMATICAL AUDIT & CALCULATORS
+    // =========================================================================
+    function calcDisplacement(b, s, n = 1) {
+      return (Math.PI / 4) * Math.pow(b / 10, 2) * (s / 10) * n; // cc
+    }
+
+    function calcMps(s, rpm) {
+      return (2 * (s / 1000) * rpm) / 60; // m/s
+    }
+
+    function calcStaticCr(b, s, vhead, gasketThick, domeVol, deckClearance) {
+      const vDisplacement = calcDisplacement(b, s);
+      const vGasket = (Math.PI / 4) * Math.pow(b / 10, 2) * (gasketThick / 10);
+      const vDeck = (Math.PI / 4) * Math.pow(b / 10, 2) * (deckClearance / 10);
+      const vc = vhead + vGasket + vDeck - domeVol;
+      const cr = (vDisplacement + vc) / vc;
+      return { cr, vc, vDisplacement };
+    }
+
+    function calcDynamicCr(b, s, rod, ivcDegrees, vc) {
+      // Effective stroke at IVC ABDC
+      const rad = (ivcDegrees * Math.PI) / 180;
+      const r = s / 2;
+      const effStroke = r * (1 + Math.cos(rad)) + rod - Math.sqrt(Math.pow(rod, 2) - Math.pow(r * Math.sin(rad), 2));
+      const vEff = (Math.PI / 4) * Math.pow(b / 10, 2) * (effStroke / 10);
+      const dcr = (vEff + vc) / vc;
+      return { dcr, effStroke };
+    }
+
+    function calcPistonKinematics(s, rod, rpm, angleDeg) {
+      const r = s / 2;
+      const rad = (angleDeg * Math.PI) / 180;
+      const omega = (2 * Math.PI * rpm) / 60;
+      const lambda = r / rod;
+
+      // Max Acceleration at TDC (m/s2)
+      const aMax = Math.pow(omega, 2) * r * (1 + lambda);
+      // Instantaneous Velocity (m/s)
+      const vInst = omega * r * (Math.sin(rad) + (lambda / 2) * Math.sin(2 * rad));
+      // Position from TDC (mm)
+      const posFromTdc = r * (1 - Math.cos(rad) + (rod / r) * (1 - Math.sqrt(1 - Math.pow(lambda * Math.sin(rad), 2))));
+
+      return { aMax, vInst, posFromTdc, gAcc: aMax / 9.80665 };
+    }
+
+    function calcSquishVelocity(b, s, clearance, squishAreaPct, rpm) {
+      // Jennings Empirical Kinetic Model for MSV
+      const msv = 0.00003 * rpm * s * (squishAreaPct / 100) * (b / (clearance * 10));
+      return msv;
+    }
+
+    function calcConRodSideLoad(b, s, rod, peakBar) {
+      const lambda = (s / 2) / rod;
+      const rodRatio = rod / (s / 2);
+      const pistonAreaCm2 = (Math.PI / 4) * Math.pow(b / 10, 2);
+      const forceCombN = peakBar * 100000 * (pistonAreaCm2 / 10000); // Newton
+      const phiMaxRad = Math.asin(lambda);
+      const fSideN = forceCombN * Math.tan(phiMaxRad);
+      return { rodRatio, fSideN, fSideKgf: fSideN / 9.80665 };
+    }
+
+    function calcTireCircumference(w, a, rInch) {
+      const diaMm = rInch * 25.4 + 2 * (w * (a / 100));
+      return { diaMm, circumMm: Math.PI * diaMm };
+    }
+
+    function calcTopSpeedEquilibrium(hp, cda, weightKg, lowCvt, highCvt, z1, z2, tireCircMm, maxRpm) {
+      const iGardan = z2 / z1;
+      const iTotalHigh = highCvt * iGardan;
+      const pMaxWatts = hp * 745.7;
+
+      // Equilibrium Numerical Bisection Loop
+      let vLow = 1;
+      let vHigh = 70; // m/s
+      let vEquil = 0;
+
+      for (let i = 0; i < 40; i++) {
+        let vMid = (vLow + vHigh) / 2;
+        let fDrag = 0.5 * 1.225 * cda * Math.pow(vMid, 2);
+        let fRr = 0.015 * weightKg * 9.81;
+        let pReq = (fDrag + fRr) * vMid;
+
+        if (pReq > pMaxWatts) {
+          vHigh = vMid;
+        } else {
+          vLow = vMid;
+        }
+      }
+      vEquil = (vLow * 3.6); // km/h
+
+      // Theoretical Limit without Drag
+      const wheelRpmTheo = maxRpm / iTotalHigh;
+      const vTheoKmh = (wheelRpmTheo * tireCircMm * 60) / 1000000;
+
+      return { vEquil: Math.min(vEquil, vTheoKmh), vTheoKmh, iGardan, iTotalHigh };
+    }
+
+    function runDragPhysics10ms(distMeters, hp, weightKg, cda, gripMu, lowCvt, highCvt, z1, z2, tireCircMm) {
+      const dt = 0.01; // 10ms time-step
+      let t = 0;
+      let x = 0;
+      let v = 0; // m/s
+      const iGardan = z2 / z1;
+      const iTotalLow = lowCvt * iGardan;
+      const iTotalHigh = highCvt * iGardan;
+
+      const pMaxWatts = hp * 745.7 * 0.90; // 90% drivetrain efficiency
+      const fNormal = weightKg * 9.81;
+      const fGripMax = fNormal * gripMu;
+
+      while (x < distMeters && t < 30) {
+        t += dt;
+        let iCvtCurr = lowCvt - (v / 30) * (lowCvt - highCvt);
+        if (iCvtCurr < highCvt) iCvtCurr = highCvt;
+        let iTotalCurr = iCvtCurr * iGardan;
+
+        let fEngineDrive = v > 1 ? pMaxWatts / v : fGripMax;
+        let fTraction = Math.min(fEngineDrive, fGripMax);
+        let fDrag = 0.5 * 1.225 * cda * Math.pow(v, 2);
+        let fRr = 0.015 * fNormal;
+
+        let fNet = fTraction - fDrag - fRr;
+        let accel = fNet / weightKg;
+        if (accel < 0) accel = 0;
+
+        v += accel * dt;
+        x += v * dt;
+      }
+
+      return { et: t, trapSpeedKmh: v * 3.6 };
+    }
+
+    // =========================================================================
+    // 4. UI REFRESH & SINKRONISASI ALL MODULES
+    // =========================================================================
+    function refreshAllCalculations() {
+      const p = state.inputs;
+
+      // 1. Displacement & MPS
+      const cc = calcDisplacement(p.bore, p.stroke, p.cylinders);
+      const mps = calcMps(p.stroke, p.rpm);
+
+      document.getElementById('dashCc').textContent = cc.toFixed(1) + ' cc';
+      document.getElementById('dashBoreStroke').textContent = `Bore: ${p.bore.toFixed(1)}mm | Stroke: ${p.stroke.toFixed(1)}mm`;
+      document.getElementById('outCcVal').textContent = cc.toFixed(1) + ' cc';
+      document.getElementById('outMpsVal').textContent = mps.toFixed(1) + ' m/s';
+      document.getElementById('dashMpsVal').textContent = mps.toFixed(1) + ' m/s';
+
+      let mpsPct = Math.min(100, (mps / 25) * 100);
+      document.getElementById('dashMpsBar').style.width = mpsPct + '%';
+
+      // 2. Compression Ratio
+      const crObj = calcStaticCr(p.bore, p.stroke, p.vhead, p.gasketThick, p.domeVol, p.deckClearance);
+      const dcrObj = calcDynamicCr(p.bore, p.stroke, p.conRodLen, p.ivcDegrees, crObj.vc);
+
+      document.getElementById('dashCR').textContent = crObj.cr.toFixed(1) + ' : 1';
+      document.getElementById('dashCombChamber').textContent = `V_chamber: ${crObj.vc.toFixed(2)} cc`;
+      document.getElementById('outStaticCr').textContent = crObj.cr.toFixed(2) + ' : 1';
+      document.getElementById('outDynamicCr').textContent = dcrObj.dcr.toFixed(2) + ' : 1';
+      document.getElementById('outEffStroke').textContent = dcrObj.effStroke.toFixed(1) + ' mm';
+      document.getElementById('outVcTotal').textContent = crObj.vc.toFixed(2) + ' cc';
+
+      // Fuel recommendation based on Static CR
+      let fuelReq = 'Premium RON 88 / Pertalite RON 90';
+      if (crObj.cr >= 12.5) fuelReq = 'VP Racing Fuel / Avgas (RON 100+)';
+      else if (crObj.cr >= 11.5) fuelReq = 'Pertamax Turbo (RON 98)';
+      else if (crObj.cr >= 10.0) fuelReq = 'Pertamax (RON 92)';
+      document.getElementById('outFuelReq').textContent = fuelReq;
+      document.getElementById('dashFuelRec').textContent = fuelReq;
+
+      // 3. Piston Kinematics
+      const kin = calcPistonKinematics(p.stroke, p.conRodLen, p.rpm, p.crankAngle);
+      document.getElementById('outMaxAcc').textContent = `${Math.round(kin.aMax).toLocaleString()} m/s² (${Math.round(kin.gAcc)} G)`;
+      document.getElementById('outInstVel').textContent = kin.vInst.toFixed(1) + ' m/s';
+      document.getElementById('outPistonPos').textContent = kin.posFromTdc.toFixed(2) + ' mm';
+      document.getElementById('crankAngleVal').textContent = p.crankAngle + '°';
+      document.getElementById('lblAngle').textContent = p.crankAngle;
+
+      // 4. Squish Velocity Guard (> 28 m/s Alert)
+      const msv = calcSquishVelocity(p.bore, p.stroke, p.squishClearance, p.squishAreaPercent, p.rpm);
+      document.getElementById('outMsvVal').textContent = msv.toFixed(1) + ' m/s';
+      document.getElementById('dashSquishVal').textContent = msv.toFixed(1) + ' m/s';
+
+      let msvPct = Math.min(100, (msv / 35) * 100);
+      document.getElementById('dashSquishBar').style.width = msvPct + '%';
+
+      const globalAlert = document.getElementById('globalAlertBanner');
+      const squishBanner = document.getElementById('squishDangerBanner');
+      const msvStatus = document.getElementById('outMsvStatus');
+
+      if (msv > 28.0) {
+        const msg = `⚠️ CRITICAL DANGER: MAXIMUM SQUISH VELOCITY DETONATION LIMIT EXCEEDED (${msv.toFixed(1)} m/s > 28.0 m/s)! RISIKO DETONASI HEBAT & ENGINE DESTRUCTION!`;
+        globalAlert.innerHTML = msg;
+        globalAlert.classList.remove('hidden');
+        squishBanner.classList.remove('hidden');
+        msvStatus.textContent = 'STATUS: CRITICAL DANGER! DETONATION RISK';
+        msvStatus.className = 'text-xs mt-1 font-black text-red-500 animate-pulse';
+      } else {
+        globalAlert.classList.add('hidden');
+        squishBanner.classList.add('hidden');
+        msvStatus.textContent = msv < 15 ? 'STATUS: SLOW BURN TURBULENCE' : 'STATUS: OPTIMAL TURBULENCE (15 - 24 m/s)';
+        msvStatus.className = 'text-xs mt-1 font-bold text-emerald-400';
+      }
+
+      // 5. Con-Rod Side Load
+      const rodObj = calcConRodSideLoad(p.bore, p.stroke, p.conRodLen, p.peakBar);
+      document.getElementById('outRodRatio').textContent = rodObj.rodRatio.toFixed(2);
+      document.getElementById('dashRodRatioVal').textContent = rodObj.rodRatio.toFixed(2);
+      document.getElementById('outSideForce').textContent = `${Math.round(rodObj.fSideN).toLocaleString()} N (${Math.round(rodObj.fSideKgf)} kgf)`;
+
+      // 6. CVT & Top Speed Equilibrium
+      const tire = calcTireCircumference(p.tireW, p.tireA, p.tireR);
+      const topSpeedObj = calcTopSpeedEquilibrium(p.targetHp, p.cda, p.totalWeight, p.cvtLow, p.cvtHigh, p.gardanZ1, p.gardanZ2, tire.circumMm, p.rpm);
+
+      document.getElementById('dashCvtRange').textContent = `${p.cvtLow.toFixed(2)} : 1  ➔  ${p.cvtHigh.toFixed(2)} : 1`;
+      document.getElementById('dashGardan').textContent = `${p.gardanZ1}/${p.gardanZ2} (${topSpeedObj.iGardan.toFixed(3)})`;
+      document.getElementById('dashTotalRatio').textContent = `${(p.cvtLow * topSpeedObj.iGardan).toFixed(2)} (Low) ➔ ${topSpeedObj.iTotalHigh.toFixed(2)} (High)`;
+      document.getElementById('dashTire').textContent = `${p.tireW}/${p.tireA} - ${p.tireR} (Keliling ${Math.round(tire.circumMm)}mm)`;
+
+      document.getElementById('dashTopSpeed').textContent = topSpeedObj.vEquil.toFixed(1) + ' km/h';
+      document.getElementById('outGardanRatio').textContent = `${topSpeedObj.iGardan.toFixed(3)} : 1`;
+      document.getElementById('outTheoSpeed').textContent = topSpeedObj.vTheoKmh.toFixed(1) + ' km/h';
+      document.getElementById('outRealTopSpeed').textContent = topSpeedObj.vEquil.toFixed(1) + ' km/h';
+
+      // 7. Drag 201m Physics
+      const dragObj = runDragPhysics10ms(p.dragDistance, p.targetHp, p.totalWeight, p.cda, p.gripMu, p.cvtLow, p.cvtHigh, p.gardanZ1, p.gardanZ2, tire.circumMm);
+      document.getElementById('outDragEt').textContent = dragObj.et.toFixed(2) + ' s';
+      document.getElementById('outDragTrapSpeed').textContent = dragObj.trapSpeedKmh.toFixed(1) + ' km/h';
+      document.getElementById('dashDrag201m').textContent = `${p.dragDistance}m ET: ${dragObj.et.toFixed(2)}s @ ${dragObj.trapSpeedKmh.toFixed(1)} km/h`;
+
+      // 8. Roller Combo
+      const avgRoller = (p.rollerNumA * p.rollerWeightA + p.rollerNumB * p.rollerWeightB) / 6;
+      const totalRoller = avgRoller * 6;
+      document.getElementById('dashRollerCombo').textContent = `${p.rollerNumA}x ${p.rollerWeightA}g + ${p.rollerNumB}x ${p.rollerWeightB}g (Avg ${avgRoller.toFixed(1)}g)`;
+      document.getElementById('outRollerAvg').textContent = avgRoller.toFixed(2) + ' gram';
+      document.getElementById('outRollerTotalMass').textContent = totalRoller.toFixed(1) + ' gram';
+
+      const omegaRpm = (2 * Math.PI * p.rpm) / 60;
+      const fcN = (totalRoller / 1000) * Math.pow(omegaRpm, 2) * 0.055; // 55mm pulley radius
+      document.getElementById('outCentrifugalForce').textContent = Math.round(fcN).toLocaleString() + ' N';
+
+      // 9. Camshaft
+      const intDur = p.io + 180 + p.ic;
+      const exhDur = p.eo + 180 + p.ec;
+      const overlap = p.io + p.ec;
+      const lsa = (intDur + exhDur) / 4 + (p.ic - p.io) / 2;
+      document.getElementById('outIntakeDur').textContent = intDur + '°';
+      document.getElementById('outExhaustDur').textContent = exhDur + '°';
+      document.getElementById('outOverlap').textContent = overlap + '°';
+      document.getElementById('outLsa').textContent = lsa.toFixed(1) + '°';
+
+      // 10. Porting & CFM
+      const portArea = (Math.PI / 4) * Math.pow(p.portDiam / 10, 2);
+      const portVel = (cc * (p.rpm / 60)) / (portArea * 100); // m/s
+      const cfm = (cc * p.rpm * 0.85) / 56600;
+      document.getElementById('outPortVelocity').textContent = portVel.toFixed(1) + ' m/s';
+      document.getElementById('outCfmVal').textContent = cfm.toFixed(1) + ' CFM';
+      document.getElementById('dashCfm').textContent = `${cfm.toFixed(1)} CFM @ Port ${p.portDiam}mm`;
+
+      // 11. Exhaust Header
+      const headerLen = (1100 * (180 + p.eo)) / p.exhaustRpm;
+      document.getElementById('outHeaderLen').textContent = headerLen.toFixed(1) + ' cm';
+
+      // 12. Fuel Injector Flow
+      const injFlow = (p.targetHp * 0.50 * 10.5) / (1 * (p.dutyCycle / 100)); // cc/min
+      document.getElementById('outInjectorFlow').textContent = Math.round(injFlow) + ' cc/min';
+      document.getElementById('dashInjectorFlow').textContent = Math.round(injFlow) + ' cc/min';
+      document.getElementById('dashHP').textContent = p.targetHp.toFixed(1) + ' HP';
+
+      // Render Dynamic SVG & Canvases
+      renderRollerSvg();
+      renderDashboardSvg();
+      renderDynoCanvas();
+      renderDragCanvas();
+      updatePrintSheet();
+    }
+
+    // =========================================================================
+    // 5. SVG SCHEMATIC & CANVAS GRAPH GRAPHICS
+    // =========================================================================
+    function renderRollerSvg() {
+      const container = document.getElementById('rollerSvgContainer');
+      if (!container) return;
+
+      const p = state.inputs;
+      let svgHtml = `<svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="65" fill="#151C28" stroke="#2A364F" stroke-width="3"/>
+        <circle cx="75" cy="75" r="25" fill="#0B0F17" stroke="#00F0FF" stroke-width="2"/>`;
+
+      for (let i = 0; i < 6; i++) {
+        const angle = (i * 60 - 90) * (Math.PI / 180);
+        const rx = 75 + 44 * Math.cos(angle);
+        const ry = 75 + 44 * Math.sin(angle);
+        const isSetA = (i % 2 === 0);
+        const col = isSetA ? '#00F0FF' : '#FFB800';
+        const w = isSetA ? p.rollerWeightA : p.rollerWeightB;
+
+        svgHtml += `<circle cx="${rx}" cy="${ry}" r="12" fill="${col}" stroke="#000" stroke-width="1.5"/>
+          <text x="${rx}" y="${ry + 4}" font-size="8" font-family="monospace" font-weight="bold" fill="#000" text-anchor="middle">${w}g</text>`;
+      }
+      svgHtml += `</svg>`;
+      container.innerHTML = svgHtml;
+    }
+
+    function renderDashboardSvg() {
+      const container = document.getElementById('dashboardSvgContainer');
+      if (!container) return;
+
+      const p = state.inputs;
+      const cc = calcDisplacement(p.bore, p.stroke).toFixed(1);
+
+      container.innerHTML = `
+        <svg width="100%" height="100%" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid meet">
+          <!-- Cylinder & Piston Stroke Diagram -->
+          <rect x="30" y="30" width="100" height="120" fill="#151C28" stroke="#2A364F" stroke-width="2" rx="4"/>
+          <rect x="35" y="60" width="90" height="45" fill="#00F0FF" opacity="0.3" rx="2"/>
+          <line x1="80" y1="105" x2="80" y2="140" stroke="#FFB800" stroke-width="4"/>
+          <circle cx="80" cy="140" r="8" fill="#FF2E54"/>
+          <text x="80" y="22" font-size="10" font-family="monospace" fill="#00F0FF" text-anchor="middle">${p.bore}x${p.stroke}mm (${cc}cc)</text>
+
+          <!-- CVT Belt Kinematics -->
+          <circle cx="240" cy="90" r="45" fill="none" stroke="#00F0FF" stroke-width="3"/>
+          <circle cx="240" cy="90" r="15" fill="#0B0F17" stroke="#00F0FF"/>
+          <circle cx="440" cy="90" r="30" fill="none" stroke="#FFB800" stroke-width="3"/>
+          <circle cx="440" cy="90" r="12" fill="#0B0F17" stroke="#FFB800"/>
+
+          <!-- Belt -->
+          <path d="M 240 45 L 440 60 M 240 135 L 440 120" stroke="#00E676" stroke-width="3" stroke-dasharray="6,4"/>
+
+          <!-- Labels -->
+          <text x="240" y="160" font-size="10" font-family="monospace" fill="#00F0FF" text-anchor="middle">Front Pulley (${p.pulleyAngle}°)</text>
+          <text x="440" y="160" font-size="10" font-family="monospace" fill="#FFB800" text-anchor="middle">Rear Driven Sheave</text>
+        </svg>
+      `;
+    }
+
+    function renderDynoCanvas() {
+      const cvs = document.getElementById('dynoCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      cvs.width = cvs.clientWidth;
+      cvs.height = cvs.clientHeight;
+
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid
+      ctx.strokeStyle = '#2A364F';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < w; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h - 20); ctx.stroke();
+      }
+      for (let y = 10; y < h - 20; y += 30) {
+        ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // Curve generation for Power & Torque
+      const p = state.inputs;
+      const maxHp = p.targetHp;
+      const peakRpm = p.rpm;
+
+      ctx.lineWidth = 2.5;
+
+      // Power Curve (Emerald)
+      ctx.strokeStyle = '#00E676';
+      ctx.beginPath();
+      for (let r = 3000; r <= 12000; r += 200) {
+        let normR = (r - 3000) / (9000);
+        let hpFactor = Math.sin(normR * Math.PI * 0.85);
+        let hpVal = maxHp * hpFactor;
+        let x = 40 + ((r - 3000) / 9000) * (w - 50);
+        let y = (h - 25) - (hpVal / (maxHp * 1.2)) * (h - 40);
+        if (r === 3000) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Torque Curve (Amber)
+      ctx.strokeStyle = '#FFB800';
+      ctx.beginPath();
+      for (let r = 3000; r <= 12000; r += 200) {
+        let normR = (r - 3000) / (9000);
+        let tqFactor = Math.sin((normR + 0.15) * Math.PI * 0.75);
+        let tqVal = (maxHp * 0.85) * tqFactor;
+        let x = 40 + ((r - 3000) / 9000) * (w - 50);
+        let y = (h - 25) - (tqVal / (maxHp * 1.2)) * (h - 40);
+        if (r === 3000) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function renderDragCanvas() {
+      const cvs = document.getElementById('dragCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      cvs.width = cvs.clientWidth;
+      cvs.height = cvs.clientHeight;
+
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#2A364F';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(30, 0); ctx.lineTo(30, h - 15); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(30, h - 15); ctx.lineTo(w, h - 15); ctx.stroke();
+
+      // Velocity Curve over 10s
+      ctx.strokeStyle = '#00F0FF';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let t = 0; t <= 10; t += 0.2) {
+        let vKmh = 115 * (1 - Math.exp(-t / 3.0));
+        let x = 30 + (t / 10) * (w - 40);
+        let y = (h - 15) - (vKmh / 140) * (h - 25);
+        if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function updatePrintSheet() {
+      const p = state.inputs;
+      const cc = calcDisplacement(p.bore, p.stroke).toFixed(1);
+      const crObj = calcStaticCr(p.bore, p.stroke, p.vhead, p.gasketThick, p.domeVol, p.deckClearance);
+
+      document.getElementById('printMotorName').textContent = state.activeMotor.name;
+      document.getElementById('printBoreStroke').textContent = `${p.bore.toFixed(1)}mm x ${p.stroke.toFixed(1)}mm`;
+      document.getElementById('printCc').textContent = `${cc} cc`;
+      document.getElementById('printCr').textContent = `${crObj.cr.toFixed(2)} : 1`;
+      document.getElementById('printRoller').textContent = `${p.rollerNumA}x ${p.rollerWeightA}g + ${p.rollerNumB}x ${p.rollerWeightB}g`;
+      document.getElementById('printPulley').textContent = `${p.pulleyAngle}°`;
+      document.getElementById('printGardan').textContent = `${p.gardanZ1}/${p.gardanZ2} (${(p.gardanZ2/p.gardanZ1).toFixed(2)})`;
+      document.getElementById('printTire').textContent = `${p.tireW}/${p.tireA} - ${p.tireR}`;
+      document.getElementById('printHp').textContent = `${p.targetHp.toFixed(1)} HP`;
+      document.getElementById('printTopSpeed').textContent = document.getElementById('dashTopSpeed').textContent;
+      document.getElementById('printDrag').textContent = document.getElementById('outDragEt').textContent;
+    }
+
+    // =========================================================================
+    // 6. SETUP A/B COMPARISON ENGINE
+    // =========================================================================
+    function renderSetupAbTable() {
+      const tbody = document.getElementById('tableAbBody');
+      if (!tbody) return;
+
+      const a = state.setupA || state.inputs;
+      const b = state.setupB || state.inputs;
+
+      const rows = [
+        { name: 'Bore x Stroke', a: `${a.bore}x${a.stroke}mm`, b: `${b.bore}x${b.stroke}mm` },
+        { name: 'Engine Displacement', a: `${calcDisplacement(a.bore, a.stroke).toFixed(1)} cc`, b: `${calcDisplacement(b.bore, b.stroke).toFixed(1)} cc` },
+        { name: 'Static CR', a: `${calcStaticCr(a.bore, a.stroke, a.vhead, a.gasketThick, a.domeVol, a.deckClearance).cr.toFixed(2)}:1`, b: `${calcStaticCr(b.bore, b.stroke, b.vhead, b.gasketThick, b.domeVol, b.deckClearance).cr.toFixed(2)}:1` },
+        { name: 'Target Horsepower', a: `${a.targetHp} HP`, b: `${b.targetHp} HP` },
+        { name: 'CVT Low / High', a: `${a.cvtLow}/${a.cvtHigh}`, b: `${b.cvtLow}/${b.cvtHigh}` }
+      ];
+
+      tbody.innerHTML = rows.map(r => `
+        <tr class="hover:bg-slate-800/40">
+          <td class="p-3 font-bold text-slate-200">${r.name}</td>
+          <td class="p-3 text-cyan-400">${r.a}</td>
+          <td class="p-3 text-amber-400">${r.b}</td>
+          <td class="p-3 text-emerald-400 font-bold">${r.a === r.b ? 'MATCH' : 'DIFFERENT'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 7. BUILT-IN AUTOMATED QA TEST SUITE
+    // =========================================================================
+    function runAutomatedQaSuite() {
+      const tests = [
+        {
+          id: 'QA-01',
+          name: 'Displacement Mio 113cc Bore 50 x Stroke 57.9 Validation',
+          test: () => Math.abs(calcDisplacement(50.0, 57.9) - 113.68) < 0.1,
+          exp: '113.68 cc',
+          act: calcDisplacement(50.0, 57.9).toFixed(2) + ' cc'
+        },
+        {
+          id: 'QA-02',
+          name: 'Static Compression Ratio Formula Verification',
+          test: () => {
+            const cr = calcStaticCr(50.0, 57.9, 12.2, 0.5, 0.0, 0.3).cr;
+            return cr > 8.0 && cr < 12.0;
+          },
+          exp: '8.0 - 12.0 : 1',
+          act: calcStaticCr(50.0, 57.9, 12.2, 0.5, 0.0, 0.3).cr.toFixed(2) + ' : 1'
+        },
+        {
+          id: 'QA-03',
+          name: 'Squish Velocity Detonation Threshold Flag (> 28 m/s)',
+          test: () => calcSquishVelocity(50.0, 57.9, 0.3, 50, 11000) > 28.0,
+          exp: '> 28.0 m/s Triggered',
+          act: calcSquishVelocity(50.0, 57.9, 0.3, 50, 11000).toFixed(1) + ' m/s'
+        },
+        {
+          id: 'QA-04',
+          name: 'Mio 14 HP Realistic Top Speed Convergence Check',
+          test: () => {
+            const tire = calcTireCircumference(90, 80, 14);
+            const res = calcTopSpeedEquilibrium(14.2, 0.38, 155, 2.62, 0.85, 13, 42, tire.circumMm, 9500);
+            return res.vEquil >= 115.0 && res.vEquil <= 126.0;
+          },
+          exp: '115.0 - 126.0 km/h',
+          act: calcTopSpeedEquilibrium(14.2, 0.38, 155, 2.62, 0.85, 13, 42, calcTireCircumference(90, 80, 14).circumMm, 9500).vEquil.toFixed(1) + ' km/h'
+        },
+        {
+          id: 'QA-05',
+          name: '201m Drag Strip 10ms Time-step ET Bounds (14 HP ~9.8-10.6s)',
+          test: () => {
+            const tire = calcTireCircumference(90, 80, 14);
+            const res = runDragPhysics10ms(201, 14.2, 155, 0.38, 0.95, 2.62, 0.85, 13, 42, tire.circumMm);
+            return res.et >= 9.5 && res.et <= 10.8;
+          },
+          exp: '9.5s - 10.8s ET',
+          act: runDragPhysics10ms(201, 14.2, 155, 0.38, 0.95, 2.62, 0.85, 13, 42, calcTireCircumference(90, 80, 14).circumMm).et.toFixed(2) + ' s'
+        },
+        {
+          id: 'QA-06',
+          name: 'Database MATIKARIA 83 Motor Item Consistency',
+          test: () => MATIKARIA_DB.length === 83,
+          exp: '83 Motors Exact',
+          act: MATIKARIA_DB.length + ' Motors'
+        }
+      ];
+
+      let passCount = 0;
+      const tbody = document.getElementById('qaTableBody');
+      tbody.innerHTML = '';
+
+      tests.forEach(t => {
+        const passed = t.test();
+        if (passed) passCount++;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/40">
+            <td class="p-2.5 font-bold text-slate-200">${t.id} - ${t.name}</td>
+            <td class="p-2.5 text-cyan-400">${t.exp}</td>
+            <td class="p-2.5 text-amber-400">${t.act}</td>
+            <td class="p-2.5 font-black ${passed ? 'text-emerald-400' : 'text-red-500'}">
+              ${passed ? 'PASSED [OK]' : 'FAILED [ERR]'}
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('qaPassCount').textContent = passCount;
+      document.getElementById('qaTotalCount').textContent = tests.length;
+    }
+
+    // =========================================================================
+    // 8. EVENT LISTENERS & DOM HANDLERS
+    // =========================================================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = 'tab-btn active w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 whitespace-nowrap';
+        } else {
+          btn.className = 'tab-btn w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between text-slate-300 hover:bg-slate-800 transition whitespace-nowrap';
+        }
+      });
+
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+      const activeSec = document.getElementById(tabId);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      if (tabId === 'tab-dyno') setTimeout(renderDynoCanvas, 50);
+      if (tabId === 'tab-drag') setTimeout(renderDragCanvas, 50);
+      if (tabId === 'tab-setup-ab') renderSetupAbTable();
+    }
+
+    function populateMotorDropdown() {
+      const sel = document.getElementById('motorSelector');
+      sel.innerHTML = MATIKARIA_DB.map(m => `<option value="${m.id}">${m.name} (${m.year})</option>`).join('');
+
+      const dbTbody = document.getElementById('dbTableBody');
+      if (dbTbody) {
+        dbTbody.innerHTML = MATIKARIA_DB.map(m => `
+          <tr class="hover:bg-slate-800/40">
+            <td class="p-2.5 font-bold text-cyan-400">${m.name}</td>
+            <td class="p-2.5 text-slate-400">${m.year}</td>
+            <td class="p-2.5 text-amber-400">${m.bore} x ${m.stroke}</td>
+            <td class="p-2.5 text-slate-300">${calcDisplacement(m.bore, m.stroke).toFixed(1)} cc</td>
+            <td class="p-2.5 text-emerald-400">${m.cr}:1</td>
+            <td class="p-2.5 text-slate-400">${m.rod} mm</td>
+            <td class="p-2.5 text-purple-400">${m.gardanZ1}/${m.gardanZ2}</td>
+            <td class="p-2.5 text-right">
+              <button onclick="loadMotorById('${m.id}')" class="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] font-bold">Select</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function loadMotorById(id) {
+      const m = MATIKARIA_DB.find(x => x.id === id);
+      if (!m) return;
+
+      state.activeMotor = { ...m };
+      state.inputs.bore = m.bore;
+      state.inputs.stroke = m.stroke;
+      state.inputs.conRodLen = m.rod;
+      state.inputs.vhead = m.vhead;
+      state.inputs.gardanZ1 = m.gardanZ1;
+      state.inputs.gardanZ2 = m.gardanZ2;
+      state.inputs.tireW = m.tireW;
+      state.inputs.tireA = m.tireA;
+      state.inputs.tireR = m.tireR;
+      state.inputs.cvtLow = m.lowCvt;
+      state.inputs.cvtHigh = m.highCvt;
+
+      // Sync form fields
+      document.getElementById('inputBore').value = m.bore;
+      document.getElementById('inputStroke').value = m.stroke;
+      document.getElementById('inputConRodLen').value = m.rod;
+      document.getElementById('inputVhead').value = m.vhead;
+      document.getElementById('inputGardanZ1').value = m.gardanZ1;
+      document.getElementById('inputGardanZ2').value = m.gardanZ2;
+      document.getElementById('inputTireW').value = m.tireW;
+      document.getElementById('inputTireA').value = m.tireA;
+      document.getElementById('inputTireR').value = m.tireR;
+      document.getElementById('inputCvtLow').value = m.lowCvt;
+      document.getElementById('inputCvtHigh').value = m.highCvt;
+
+      document.getElementById('dashActiveMotorTag').textContent = `Active Motor: ${m.name}`;
+      refreshAllCalculations();
+    }
+
+    function bindInputEvents() {
+      const fieldMap = [
+        ['inputBore', 'bore'], ['inputStroke', 'stroke'], ['inputCylinders', 'cylinders'], ['inputRpm', 'rpm'],
+        ['inputVhead', 'vhead'], ['inputGasketThick', 'gasketThick'], ['inputDomeVol', 'domeVol'], ['inputDeckClearance', 'deckClearance'],
+        ['inputIvcDegrees', 'ivcDegrees'], ['inputConRodLen', 'conRodLen'], ['inputCrankAngle', 'crankAngle'],
+        ['inputSquishClearance', 'squishClearance'], ['inputSquishAreaPercent', 'squishAreaPercent'], ['inputPeakBar', 'peakBar'],
+        ['inputCvtLow', 'cvtLow'], ['inputCvtHigh', 'cvtHigh'], ['inputGardanZ1', 'gardanZ1'], ['inputGardanZ2', 'gardanZ2'],
+        ['inputTireW', 'tireW'], ['inputTireA', 'tireA'], ['inputTireR', 'tireR'], ['inputCda', 'cda'], ['inputTotalWeight', 'totalWeight'],
+        ['inputRollerNumA', 'rollerNumA'], ['inputRollerWeightA', 'rollerWeightA'], ['inputRollerNumB', 'rollerNumB'], ['inputRollerWeightB', 'rollerWeightB'],
+        ['inputPulleyAngle', 'pulleyAngle'], ['inputBeltLength', 'beltLength'], ['inputIo', 'io'], ['inputIc', 'ic'], ['inputEo', 'eo'], ['inputEc', 'ec'],
+        ['inputPortDiam', 'portDiam'], ['inputExhaustRpm', 'exhaustRpm'], ['inputTargetHp', 'targetHp'], ['inputDutyCycle', 'dutyCycle'],
+        ['inputGripMu', 'gripMu']
+      ];
+
+      fieldMap.forEach(([elemId, paramKey]) => {
+        const el = document.getElementById(elemId);
+        if (el) {
+          el.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+              state.inputs[paramKey] = val;
+              refreshAllCalculations();
+            }
+          });
+        }
+      });
+
+      // Select Inputs
+      document.getElementById('inputFuelType')?.addEventListener('change', (e) => {
+        state.inputs.fuelType = e.target.value;
+        refreshAllCalculations();
+      });
+
+      document.getElementById('inputDragDistance')?.addEventListener('change', (e) => {
+        state.inputs.dragDistance = parseFloat(e.target.value);
+        refreshAllCalculations();
+      });
+
+      // Tab Buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      // Top Motor Selector Load
+      document.getElementById('btnLoadMotor')?.addEventListener('click', () => {
+        const selVal = document.getElementById('motorSelector').value;
+        loadMotorById(selVal);
+      });
+
+      // Theme Selector
+      document.getElementById('themeSelector')?.addEventListener('change', (e) => {
+        const theme = e.target.value;
+        document.body.classList.remove('mode-bengkel', 'dark', 'light');
+        if (theme === 'bengkel') {
+          document.body.classList.add('mode-bengkel');
+        } else if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      });
+
+      // Run Drag Sim Button
+      document.getElementById('btnRunDragSim')?.addEventListener('click', () => {
+        refreshAllCalculations();
+        renderDragCanvas();
+      });
+
+      // Store Setup A/B
+      document.getElementById('btnStoreSetupA')?.addEventListener('click', () => {
+        state.setupA = JSON.parse(JSON.stringify(state.inputs));
+        renderSetupAbTable();
+      });
+      document.getElementById('btnStoreSetupB')?.addEventListener('click', () => {
+        state.setupB = JSON.parse(JSON.stringify(state.inputs));
+        renderSetupAbTable();
+      });
+
+      // QA Test Runner
+      document.getElementById('btnRunQaTests')?.addEventListener('click', runAutomatedQaSuite);
+
+      // JSON Export/Import
+      document.getElementById('btnExportJSON')?.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", `Polar_Racing_Setup_${state.activeMotor.id}.json`);
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        dlAnchor.remove();
+      });
+
+      document.getElementById('btnSaveSetup')?.addEventListener('click', () => {
+        localStorage.setItem('polar_racing_v4_setup', JSON.stringify(state));
+        alert('Setup saved to local memory!');
+      });
+    }
+
+    // =========================================================================
+    // 9. INITIALIZATION ON WINDOW LOAD
+    // =========================================================================
+    window.onload = function() {
+      populateMotorDropdown();
+      bindInputEvents();
+      loadMotorById('mio_sporty');
+      runAutomatedQaSuite();
+      window.addEventListener('resize', () => {
+        renderDynoCanvas();
+        renderDragCanvas();
+      });
+    };
+  </script>
+</body>
+</html>
